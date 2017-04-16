@@ -25,6 +25,7 @@ repositories {
 
 // extensions
 ext {
+    butterKnifeVersion = "8.5.1"
     supportLibraryVersion = "25.0.1"
     playServicesVersion = "10.0.1"
     schematicVersion = "0.7.0"
@@ -32,13 +33,32 @@ ext {
 
 dependencies {
 
-  compile "com.google.android.gms:play-services-gcm:$playServicesVersion"
-  compile 'com.squareup.okhttp:okhttp:2.5.0'
-  compile "net.simonvt.schematic:schematic:$schematicVersion"
-  annotationProcessor "net.simonvt.schematic:schematic-compiler:$schematicVersion"
-  compile 'com.melnykov:floatingactionbutton:1.2.0'
-  compile "com.android.support:design:$supportLibraryVersion"
-  compile('com.github.afollestad.material-dialogs:core:0.8.5.7@aar') {
-    transitive = true
-  }
+    // butterknife
+    annotationProcessor "com.jakewharton:butterknife-compiler:$butterKnifeVersion"
+    compile "com.jakewharton:butterknife:$butterKnifeVersion"
+
+    // design
+    compile "com.android.support:design:$supportLibraryVersion"
+
+    // fab
+    compile 'com.melnykov:floatingactionbutton:1.2.0'
+
+    // gcm
+    compile "com.google.android.gms:play-services-gcm:$playServicesVersion"
+
+    // material-dialogs
+    compile('com.github.afollestad.material-dialogs:core:0.8.5.7@aar') {
+        transitive = true
+    }
+
+    // ok http
+    compile 'com.squareup.okhttp:okhttp:2.5.0'
+
+    // schematic
+    compile "net.simonvt.schematic:schematic:$schematicVersion"
+    annotationProcessor "net.simonvt.schematic:schematic-compiler:$schematicVersion"
+
+    // support library
+    compile "com.android.support:appcompat-v7:$supportLibraryVersion"
+
 }
