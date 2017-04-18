@@ -43,9 +43,6 @@ dependencies {
     // design
     compile "com.android.support:design:$supportLibraryVersion"
 
-    // fab
-    compile 'com.melnykov:floatingactionbutton:1.2.0'
-
     // gcm
     compile "com.google.android.gms:play-services-gcm:$playServicesVersion"
 
