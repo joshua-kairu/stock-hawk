@@ -29,6 +29,7 @@ ext {
     supportLibraryVersion = "25.0.1"
     playServicesVersion = "10.0.1"
     schematicVersion = "0.7.0"
+    stethoVersion = "1.4.2"
     williamChartVersion = "2.4.0"
 }
 
@@ -58,6 +59,9 @@ dependencies {
     // schematic
     compile "net.simonvt.schematic:schematic:$schematicVersion"
     annotationProcessor "net.simonvt.schematic:schematic-compiler:$schematicVersion"
+
+    // stetho
+    debugCompile "com.facebook.stetho:stetho:$stethoVersion"
 
     // support library
     compile "com.android.support:appcompat-v7:$supportLibraryVersion"
