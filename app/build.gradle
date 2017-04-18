@@ -29,6 +29,7 @@ ext {
     supportLibraryVersion = "25.0.1"
     playServicesVersion = "10.0.1"
     schematicVersion = "0.7.0"
+    williamChartVersion = "2.4.0"
 }
 
 dependencies {
@@ -60,5 +61,8 @@ dependencies {
 
     // support library
     compile "com.android.support:appcompat-v7:$supportLibraryVersion"
+
+    // william chart
+    compile "com.diogobernardino:williamchart:$williamChartVersion"
 
 }
