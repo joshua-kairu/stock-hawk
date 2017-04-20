@@ -27,10 +27,11 @@ repositories {
 // extensions
 ext {
     butterKnifeVersion = "8.5.1"
-    supportLibraryVersion = "25.0.1"
+    materialDialogsVersion = "0.9.4.4"
     playServicesVersion = "10.0.1"
     schematicVersion = "0.7.0"
     stethoVersion = "1.4.2"
+    supportLibraryVersion = "25.0.1"
     williamChartVersion = "2.4.0"
 }
 
@@ -47,9 +48,7 @@ dependencies {
     compile "com.google.android.gms:play-services-gcm:$playServicesVersion"
 
     // material-dialogs
-    compile('com.github.afollestad.material-dialogs:core:0.8.5.7@aar') {
-        transitive = true
-    }
+    compile "com.afollestad.material-dialogs:core:$materialDialogsVersion"
 
     // ok http
     compile 'com.squareup.okhttp:okhttp:2.5.0'
