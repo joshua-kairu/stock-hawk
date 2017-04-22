@@ -88,14 +88,40 @@ public class MyStocksActivity extends AppCompatActivity
                     @Override
                     public void onItemClick( View v, int position ) {
 
-                        // 0. start the stock detail activity
+                        // 0. start the stock detail activity with the correct symbol
+                        // 0a. confirm we have a cursor
+                        // 0a0. move the cursor to this item's position
+                        // 0a1. get the symbol at this position
+                        // 0a2. add the symbol to the detail intent
+                        // 0a3. start the detail activity via the detail intent
 
-                        // 0. start the stock detail activity
+                        // 0. start the stock detail activity with the correct symbol
 
-                        startActivity( new Intent( MyStocksActivity.this,
-                                StockDetailActivity.class ) );
+                        // 0a. confirm we have a cursor
 
-                        // do something on item click
+                        // begin if we have a cursor
+                        if ( mCursor != null ) {
+
+                            // 0a0. move the cursor to this item's position
+
+                            mCursor.moveToPosition( position );
+
+                            // 0a1. get the symbol at this position
+
+                            String symbol = mCursor.getString( QuoteColumns.STOCKS_COLUMN_SYMBOL );
+
+                            // 0a2. add the symbol to the detail intent
+
+                            Intent detailIntent = new Intent( MyStocksActivity.this,
+                                    StockDetailActivity.class )
+                                    .putExtra( StockDetailActivity.KEY_SYMBOL, symbol );
+
+                            // 0a3. start the detail activity via the detail intent
+
+                            startActivity( detailIntent );
+
+                        } // end if we have a cursor
+
                     }
                 } ) );
         recyclerView.setAdapter( mCursorAdapter );
@@ -222,8 +248,7 @@ public class MyStocksActivity extends AppCompatActivity
     public Loader< Cursor > onCreateLoader( int id, Bundle args ) {
         // This narrows the return to only the stocks that are most current.
         return new CursorLoader( this, QuoteProvider.Quotes.CONTENT_URI,
-                new String[]{ QuoteColumns._ID, QuoteColumns.SYMBOL, QuoteColumns.BIDPRICE,
-                        QuoteColumns.PERCENT_CHANGE, QuoteColumns.CHANGE, QuoteColumns.ISUP },
+                QuoteColumns.STOCKS_COLUMNS,
                 QuoteColumns.ISCURRENT + " = ?",
                 new String[]{ "1" },
                 null );
