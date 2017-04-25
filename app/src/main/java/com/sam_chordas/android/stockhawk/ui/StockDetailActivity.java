@@ -4,6 +4,7 @@ import android.database.Cursor;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.TextUtils;
@@ -11,6 +12,7 @@ import android.widget.Toast;
 
 import com.db.chart.model.ChartEntry;
 import com.db.chart.model.LineSet;
+import com.db.chart.renderer.AxisRenderer;
 import com.db.chart.view.LineChartView;
 import com.sam_chordas.android.stockhawk.R;
 import com.sam_chordas.android.stockhawk.data.QuoteColumns;
@@ -150,8 +152,9 @@ public class StockDetailActivity extends AppCompatActivity implements
         // than the largest bid price, or the next divisor of five if the max value is divisible by
         // five
         // 0b2c. the lower axis limit should be the previous number divisible by five that's smaller
-        // than the smallest bid price, , or the previous divisor of five if the min value is
+        // than the smallest bid price, or the previous divisor of five if the min value is
         // divisible by five
+        // 0b2-last. maybe don't show the X axis labels for now
 
         // 0. if there is a cursor
 
@@ -218,6 +221,10 @@ public class StockDetailActivity extends AppCompatActivity implements
 
             mStocksLineChartView.setAxisBorderValues( Utils.getChartMinValue( bidPrices ),
                     Utils.getChartMaxValue( bidPrices ) );
+
+            // 0b2-last. maybe don't show the X axis labels for now
+
+            mStocksLineChartView.setXLabels( AxisRenderer.LabelPosition.NONE );
 
             mStocksLineChartView.show();
 
