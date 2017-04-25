@@ -233,6 +233,8 @@ public class StockDetailActivity extends AppCompatActivity implements
 
             mStocksLineChartView.show();
 
+            // TODO: 4/25/17 The LineChartView crashes in the defineRegions method
+
         } // end if the cursor exists
 
     } // end onLoadFinished
