@@ -86,6 +86,7 @@ public class StockDetailActivity extends AppCompatActivity implements
         // 3. initialize
         // 3a. loader
         // 3b. the stock symbol
+        // 4. put the stock symbol as the app bar title if possible
 
         // 0. super stuff
 
@@ -108,6 +109,10 @@ public class StockDetailActivity extends AppCompatActivity implements
         // 3b. the stock symbol
 
         mStockSymbol = getIntent() != null ? getIntent().getStringExtra( KEY_SYMBOL ) : "";
+
+        // 4. put the stock symbol as the app bar title if possible
+
+        if ( getSupportActionBar() != null ) { getSupportActionBar().setTitle( mStockSymbol ); }
 
     } // end onCreate
 
