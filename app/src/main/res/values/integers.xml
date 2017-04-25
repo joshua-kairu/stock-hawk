@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!-- the integers -->
+
+<resources>
+
+    <!-- step for the chart view vertical axis. A step is the distance between two labels -->
+    <integer name="vertical_axis_step">5</integer>
+
+</resources>

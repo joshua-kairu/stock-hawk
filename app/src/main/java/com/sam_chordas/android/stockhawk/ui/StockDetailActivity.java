@@ -15,6 +15,7 @@ import com.db.chart.view.LineChartView;
 import com.sam_chordas.android.stockhawk.R;
 import com.sam_chordas.android.stockhawk.data.QuoteColumns;
 import com.sam_chordas.android.stockhawk.data.QuoteProvider;
+import com.sam_chordas.android.stockhawk.rest.Utils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -142,7 +143,15 @@ public class StockDetailActivity extends AppCompatActivity implements
         // 0b0. create an array of labels used in the line chart
         // 0b1. use the array of labels and bid prices to create the line set to be used in the
         // chart
+        // 0b1a. the line should have the accent color
         // 0b2. show the chart
+        // 0b2a. use the appropriate step count
+        // 0b2b. the upper axis limit should be the next number divisible by five that's bigger
+        // than the largest bid price, or the next divisor of five if the max value is divisible by
+        // five
+        // 0b2c. the lower axis limit should be the previous number divisible by five that's smaller
+        // than the smallest bid price, , or the previous divisor of five if the min value is
+        // divisible by five
 
         // 0. if there is a cursor
 
@@ -186,9 +195,29 @@ public class StockDetailActivity extends AppCompatActivity implements
 
             LineSet lineSet = new LineSet( labels, bidPrices );
 
+            // 0b1a. the line should have the accent color
+
+            lineSet.setColor( getResources().getColor( R.color.material_orange_accent_700 ) );
+
             mStocksLineChartView.addData( lineSet );
 
             // 0b2. show the chart
+
+            // 0b2a. use the appropriate step count
+
+            mStocksLineChartView.setStep(
+                    getResources().getInteger( R.integer.vertical_axis_step ) );
+
+            // 0b2b. the upper axis limit should be the next number divisible by five that's bigger
+            // than the largest bid price, or the next divisor of five if the max value is divisible
+            // by five
+
+            // 0b2c. the lower axis limit should be the previous number divisible by five that's
+            // smaller than the smallest bid price, or the previous divisor of five if the min value
+            // is divisible by five
+
+            mStocksLineChartView.setAxisBorderValues( Utils.getChartMinValue( bidPrices ),
+                    Utils.getChartMaxValue( bidPrices ) );
 
             mStocksLineChartView.show();
 
