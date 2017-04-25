@@ -31,23 +31,6 @@ public class StethoApplication extends Application {
     
     /* Overrides */
 
-//    @Override
-//    // begin attachBaseContext
-//    protected void attachBaseContext( Context base ) {
-//
-//        // 0. super stuff
-//        // 1. set up multidex
-//
-//        // 0. super stuff
-//
-//        super.attachBaseContext( base );
-//
-//        // 1. set up multidex
-//
-//        MultiDex.install( this );
-//
-//    } // end attachBaseContext
-
     @Override
     // begin onCreate
     public void onCreate() {
