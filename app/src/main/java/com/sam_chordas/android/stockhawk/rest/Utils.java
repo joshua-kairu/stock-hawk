@@ -1,14 +1,13 @@
 package com.sam_chordas.android.stockhawk.rest;
 
 import android.content.ContentProviderOperation;
-import android.content.Intent;
 import android.util.Log;
 
+import com.google.android.gms.gcm.TaskParams;
 import com.sam_chordas.android.stockhawk.data.QuoteColumns;
 import com.sam_chordas.android.stockhawk.data.QuoteProvider;
 
 import java.util.ArrayList;
-import java.util.Locale;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -233,5 +232,58 @@ public class Utils {
         else { return smallestBid - 5; }
 
     } // end method getChartMinValue
+
+    /**
+     * Helper method to get a stock symbol from its parent JSON, which is passed in as a string.
+     * Useful for when we want to report that a stock symbol doesn't exist - such as in the catch
+     * block in
+     * {@link com.sam_chordas.android.stockhawk.service.StockTaskService#onRunTask(TaskParams)}.
+     *
+     * Most of this is copied from {@link Utils#quoteJsonToContentVals(String)} and
+     * {@link Utils#buildBatchOperation(JSONObject)}.
+     *
+     * @param JSON The JSON string having the symbol
+     *
+     * @return The symbol as a string
+     */
+    // begin method getSymbolFromJSON
+    public static String getSymbolFromJSON ( String JSON ) {
+
+        // 0. get the query JSON object
+        // 1. get the symbol from the query object
+        // 2. return the symbol
+
+        // 0. get the query JSON object
+
+        JSONObject jsonObject;
+
+        // begin trying to work with the JSON
+        try {
+
+            jsonObject = new JSONObject( JSON );
+
+            if ( jsonObject.length() != 0 ) {
+
+                jsonObject = jsonObject.getJSONObject( "query" );
+
+                int count = Integer.parseInt( jsonObject.getString( "count" ) );
+
+                // 1. get the symbol from the query object
+                // 2. return the symbol
+
+                if ( count == 1 ) {
+                    return jsonObject.getJSONObject( "results" ).getJSONObject( "quote" )
+                            .getString( "symbol" );
+                }
+            }
+
+        } // end trying to work with the JSON
+
+        // catch JSON issues
+        catch ( JSONException e ) { Log.e( LOG_TAG, "Error parsing JSON", e ); }
+
+        return null; // because we have no other option by now
+
+    } // end method getSymbolFromJSON
 
 }

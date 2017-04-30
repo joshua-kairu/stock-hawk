@@ -13,10 +13,13 @@ import com.google.android.gms.gcm.GcmTaskService;
 import com.google.android.gms.gcm.TaskParams;
 import com.sam_chordas.android.stockhawk.data.QuoteColumns;
 import com.sam_chordas.android.stockhawk.data.QuoteProvider;
+import com.sam_chordas.android.stockhawk.event.NoSuchStockEvent;
 import com.sam_chordas.android.stockhawk.rest.Utils;
 import com.squareup.okhttp.OkHttpClient;
 import com.squareup.okhttp.Request;
 import com.squareup.okhttp.Response;
+
+import org.greenrobot.eventbus.EventBus;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
@@ -28,12 +31,23 @@ import java.net.URLEncoder;
  * and is used for the initialization and adding task as well.
  */
 public class StockTaskService extends GcmTaskService {
+
+    /* CONSTANTS */
+
+    /* Integers */
+
+    /* Strings */
+
     private String LOG_TAG = StockTaskService.class.getSimpleName();
+
+    /* VARIABLES */
 
     private OkHttpClient client = new OkHttpClient();
     private Context mContext;
     private StringBuilder mStoredSymbols = new StringBuilder();
     private boolean isUpdate;
+
+    /* CONSTRUCTOR */
 
     public StockTaskService() {
     }
@@ -42,14 +56,7 @@ public class StockTaskService extends GcmTaskService {
         mContext = context;
     }
 
-    String fetchData( String url ) throws IOException {
-        Request request = new Request.Builder()
-                .url( url )
-                .build();
-
-        Response response = client.newCall( request ).execute();
-        return response.body().string();
-    }
+    /* Overrides */
 
     @Override
     public int onRunTask( TaskParams params ) {
@@ -111,7 +118,7 @@ public class StockTaskService extends GcmTaskService {
                 + "org%2Falltableswithkeys&callback=" );
 
         String urlString;
-        String getResponse;
+        final String getResponse;
         int result = GcmNetworkManager.RESULT_FAILURE;
 
         if ( urlStringBuilder != null ) {
@@ -132,6 +139,13 @@ public class StockTaskService extends GcmTaskService {
                 } catch ( RemoteException | OperationApplicationException e ) {
                     Log.e( LOG_TAG, "Error applying batch insert", e );
                 }
+
+                // catch number formats
+                catch ( NumberFormatException e ) {
+                    EventBus.getDefault().post( new NoSuchStockEvent(
+                            Utils.getSymbolFromJSON( getResponse ) ) );
+                }
+
             } catch ( IOException e ) {
                 e.printStackTrace();
             }
@@ -139,5 +153,17 @@ public class StockTaskService extends GcmTaskService {
 
         return result;
     }
+
+    /* Other Methods */
+
+    String fetchData( String url ) throws IOException {
+        Request request = new Request.Builder()
+                .url( url )
+                .build();
+
+        Response response = client.newCall( request ).execute();
+        return response.body().string();
+    }
+
 
 }

@@ -27,6 +27,7 @@ repositories {
 // extensions
 ext {
     butterKnifeVersion = "8.5.1"
+    eventBusVersion = "3.0.0"
     materialDialogsVersion = "0.9.4.4"
     playServicesVersion = "10.0.1"
     schematicVersion = "0.7.0"
@@ -43,6 +44,9 @@ dependencies {
 
     // design
     compile "com.android.support:design:$supportLibraryVersion"
+
+    // eventbus
+    compile "org.greenrobot:eventbus:$eventBusVersion"
 
     // gcm
     compile "com.google.android.gms:play-services-gcm:$playServicesVersion"

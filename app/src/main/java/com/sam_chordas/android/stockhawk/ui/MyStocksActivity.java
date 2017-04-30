@@ -26,6 +26,7 @@ import com.afollestad.materialdialogs.MaterialDialog;
 import com.sam_chordas.android.stockhawk.R;
 import com.sam_chordas.android.stockhawk.data.QuoteColumns;
 import com.sam_chordas.android.stockhawk.data.QuoteProvider;
+import com.sam_chordas.android.stockhawk.event.NoSuchStockEvent;
 import com.sam_chordas.android.stockhawk.rest.QuoteCursorAdapter;
 import com.sam_chordas.android.stockhawk.rest.RecyclerViewItemClickListener;
 import com.sam_chordas.android.stockhawk.rest.Utils;
@@ -36,14 +37,27 @@ import com.google.android.gms.gcm.PeriodicTask;
 import com.google.android.gms.gcm.Task;
 import com.sam_chordas.android.stockhawk.touch_helper.SimpleItemTouchHelperCallback;
 
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
+
 public class MyStocksActivity extends AppCompatActivity
         implements LoaderManager.LoaderCallbacks< Cursor > {
+
+    /* CONSTANTS */
+
+    /* Integers */
 
     /**
      * Fragment managing the behaviors, interactions and presentation of the navigation drawer.
      */
 
     private static final int CURSOR_LOADER_ID = 0;
+
+    /* Strings */
+
+    /* VARIABLES */
+
     boolean isConnected;
     /**
      * Used to store the last screen title. For use in {@link #restoreActionBar()}.
@@ -54,6 +68,14 @@ public class MyStocksActivity extends AppCompatActivity
     private QuoteCursorAdapter mCursorAdapter;
     private Context mContext;
     private Cursor mCursor;
+
+    /* CONSTRUCTOR */
+
+    /* METHODS */
+
+    /* Getters and Setters */
+
+    /* Overrides */
 
     @Override
     protected void onCreate( Bundle savedInstanceState ) {
@@ -198,6 +220,22 @@ public class MyStocksActivity extends AppCompatActivity
         }
     }
 
+    @Override
+    // begin onStart
+    protected void onStart() {
+
+        // 0. super stuff
+        // 1. register for events
+
+        // 0. super stuff
+
+        super.onStart();
+
+        // 1. register for events
+
+        EventBus.getDefault().register( this );
+
+    } // end onStart
 
     @Override
     public void onResume() {
@@ -205,16 +243,22 @@ public class MyStocksActivity extends AppCompatActivity
         getLoaderManager().restartLoader( CURSOR_LOADER_ID, null, this );
     }
 
-    public void networkToast() {
-        Toast.makeText( mContext, getString( R.string.network_toast ), Toast.LENGTH_SHORT ).show();
-    }
+    @Override
+    // begin onStop
+    protected void onStop() {
 
-    public void restoreActionBar() {
-        ActionBar actionBar = getSupportActionBar();
-        actionBar.setNavigationMode( ActionBar.NAVIGATION_MODE_STANDARD );
-        actionBar.setDisplayShowTitleEnabled( true );
-        actionBar.setTitle( mTitle );
-    }
+        // 0. super stuff
+        // 1. unregister for events
+
+        // 0. super stuff
+
+        super.onStop();
+
+        // 1. unregister for events
+
+        EventBus.getDefault().unregister( this );
+
+    } // end onStop
 
     @Override
     public boolean onCreateOptionsMenu( Menu menu ) {
@@ -264,5 +308,32 @@ public class MyStocksActivity extends AppCompatActivity
     public void onLoaderReset( Loader< Cursor > loader ) {
         mCursorAdapter.swapCursor( null );
     }
+
+    /* Other Methods */
+
+    public void networkToast() {
+        Toast.makeText( mContext, getString( R.string.network_toast ), Toast.LENGTH_SHORT ).show();
+    }
+
+    public void restoreActionBar() {
+        ActionBar actionBar = getSupportActionBar();
+        actionBar.setNavigationMode( ActionBar.NAVIGATION_MODE_STANDARD );
+        actionBar.setDisplayShowTitleEnabled( true );
+        actionBar.setTitle( mTitle );
+    }
+
+    @Subscribe( threadMode = ThreadMode.MAIN )
+    // begin onNoSuchStockEvent
+    public void onNoSuchStockEvent( NoSuchStockEvent event ) {
+
+        // 0. toast the user
+
+        // 0. toast the user
+
+        Toast.makeText( mContext,
+                getString( R.string.message_no_such_stock_format, event.getStockSymbol() ),
+                Toast.LENGTH_SHORT ).show();
+
+    } // end onNoSuchStockEvent
 
 }
