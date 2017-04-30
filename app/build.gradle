@@ -43,6 +43,7 @@ dependencies {
     compile "com.jakewharton:butterknife:$butterKnifeVersion"
 
     // design
+    //noinspection GradleCompatible
     compile "com.android.support:design:$supportLibraryVersion"
 
     // eventbus
