@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!-- layout for the detail widget -->
+
+<RelativeLayout
+
+    xmlns:android="http://schemas.android.com/apk/res/android"
+
+    android:layout_width="match_parent"
+
+    android:layout_height="match_parent"
+
+    >
+
+    <!-- FrameLayout to hold the logo -->
+
+    <FrameLayout
+
+        android:layout_width="match_parent"
+
+        android:layout_height="?android:attr/actionBarSize"
+
+        android:paddingStart="@dimen/layout_padding"
+
+        android:paddingEnd="@dimen/layout_padding"
+
+        android:paddingTop="@dimen/space_between_content_areas"
+
+        android:paddingBottom="@dimen/space_between_content_areas"
+
+        android:id="@+id/widget_detail_fl_logo"
+
+        android:background="@color/material_blue_500"
+
+        >
+
+        <!-- the logo -->
+
+        <TextView
+
+            android:layout_width="wrap_content"
+
+            android:layout_height="wrap_content"
+
+            style="@style/TextAppearance.AppCompat.Headline"
+
+            android:text="@string/app_name"
+
+            android:layout_gravity="center_vertical"
+
+            />
+
+    </FrameLayout>
+
+    <!-- list of the stocks -->
+
+    <ListView
+
+        android:id="@+id/widget_detail_lv_stocks"
+
+        android:layout_width="match_parent"
+
+        android:layout_height="match_parent"
+
+        android:layout_below="@id/widget_detail_fl_logo"
+
+        />
+
+    <!-- TextView for when there is no info available -->
+
+    <TextView
+
+        android:id="@+id/widget_detail_tv_empty"
+
+        android:layout_width="match_parent"
+
+        android:layout_height="wrap_content"
+
+        android:gravity="center_horizontal"
+
+        style="@style/TextAppearance.AppCompat.Title"
+
+        android:padding="@dimen/layout_padding"
+
+        android:text="@string/message_error_no_stocks_info"
+
+        android:layout_marginTop="@dimen/layout_padding"
+
+        android:layout_below="@id/widget_detail_fl_logo"
+
+        />
+
+</RelativeLayout>

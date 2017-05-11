@@ -2,10 +2,13 @@
 
     <string name="app_name">Stock Hawk</string>
 
-    <!-- activity titles -->
+    <!-- titles -->
 
     <!-- The title of the detail activity [CHAR LIMIT = 15] -->
     <string name="title_activity_detail">Stock Detail</string>
+
+    <!-- The title of the stocks list widget [CHAR LIMIT = 20] -->
+    <string name="title_widget_stocks">StockHawk Stocks</string>
 
     <string name="action_example">Example action</string>
 
@@ -26,5 +29,10 @@
     <string name="message_no_such_stock_format" translatable="false">
         <xliff:g id="symbol">%1$s</xliff:g> is a nonexistent stock
     </string>
+
+    <!-- messages -->
+
+    <!-- message for when there are no stocks to display [CHAR LIMIT = 30] -->
+    <string name="message_error_no_stocks_info">No Stocks Info Available</string>
 
 </resources>

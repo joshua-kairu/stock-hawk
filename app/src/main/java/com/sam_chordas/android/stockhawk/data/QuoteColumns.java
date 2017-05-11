@@ -41,11 +41,11 @@ public class QuoteColumns {
 
     @DataType( DataType.Type.INTEGER )
     @NotNull
-    public static final String ISUP = "is_up";
+    public static final String ISUP = "is_up"; // if the stock is rising at this particular moment
 
     @DataType( DataType.Type.INTEGER )
     @NotNull
-    public static final String ISCURRENT = "is_current";
+    public static final String ISCURRENT = "is_current"; // if this is the current stock value
 
     /* Arrays */
 

@@ -60,20 +60,96 @@
 
             />
 
-        <service
-            android:name="com.sam_chordas.android.stockhawk.service.StockTaskService"
-            android:exported="true"
-            android:permission="com.google.android.gms.permission.BIND_NETWORK_TASK_SERVICE">
-            <intent-filter>
-                <action android:name="com.google.android.gms.gcm.ACTION_TASK_READY" />
-            </intent-filter>
-        </service>
-        <service android:name="com.sam_chordas.android.stockhawk.service.StockIntentService" />
+        <!-- providers -->
 
         <provider
+
             android:name="com.sam_chordas.android.stockhawk.data.generated.QuoteProvider"
+
             android:authorities="com.sam_chordas.android.stockhawk.data.QuoteProvider"
-            android:exported="false" />
+
+            android:exported="false"
+
+            />
+
+        <!-- receivers -->
+
+        <!-- the detail widget receiver -->
+
+        <receiver
+
+            android:name=".widget.DetailWidgetProvider"
+
+            android:label="@string/title_activity_detail"
+
+            >
+
+            <intent-filter>
+
+                <!-- this widget registers to receive the widget update broadcast. The widget update
+                broadcast is sent when it is time to update the widget. When the widget gets this
+                 broadcast, the widget can update itself -->
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+
+                <!-- this widget receives the data update broadcast from the service that updates
+                stocks so that the widget can know when to update itself -->
+                <action android:name="${actionDataUpdated}" />
+
+            </intent-filter>
+
+            <!-- tells Android where to find the metadata to display in the widget selection screen -->
+            <meta-data
+
+                android:name="android.appwidget.provider"
+
+                android:resource="@xml/stock_detail_list_widget"
+
+                />
+
+        </receiver>
+
+        <!-- services -->
+
+        <!-- gcm service to fetch stocks -->
+
+        <service
+
+            android:name="com.sam_chordas.android.stockhawk.service.StockTaskService"
+
+            android:exported="true"
+
+            android:permission="com.google.android.gms.permission.BIND_NETWORK_TASK_SERVICE"
+
+            >
+
+            <intent-filter>
+
+                <action android:name="com.google.android.gms.gcm.ACTION_TASK_READY" />
+
+            </intent-filter>
+
+        </service>
+
+        <!-- intent service to start the StockTaskService gcm service -->
+
+        <service
+
+            android:name="com.sam_chordas.android.stockhawk.service.StockIntentService"
+
+            />
+
+        <!-- the service to update the stocks widget -->
+
+        <service
+
+            android:name="com.sam_chordas.android.stockhawk.widget.DetailWidgetRemoteViewsService"
+
+            android:permission="android.permission.BIND_REMOTEVIEWS"
+
+            android:exported="false"
+
+            />
+
     </application>
 
 </manifest>
