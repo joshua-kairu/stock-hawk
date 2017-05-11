@@ -11,6 +11,16 @@ android {
         versionCode 1
         versionName "1.0"
         vectorDrawables.useSupportLibrary = true
+
+        // gotten from https://medium.com/google-developers/building-a-documentsprovider-f7f2fb38e86a
+        def actionDataUpdatedValue = applicationId + ".ACTION_DATA_UPDATED"
+
+        // Now we can use ${actionDataUpdated} in our Manifest
+        manifestPlaceholders = [ actionDataUpdated: actionDataUpdatedValue ]
+
+        // Now we can use BuildConfig.ACTION_DATA_UPDATED in our code
+        buildConfigField "String", "ACTION_DATA_UPDATED", "\"${actionDataUpdatedValue}\""
+
     }
     buildTypes {
         release {
@@ -27,6 +37,7 @@ repositories {
 // extensions
 ext {
     butterKnifeVersion = "8.5.1"
+    constraintLayoutVersion = "1.0.2"
     eventBusVersion = "3.0.0"
     materialDialogsVersion = "0.9.4.4"
     playServicesVersion = "10.0.1"
@@ -41,6 +52,10 @@ dependencies {
     // butterknife
     annotationProcessor "com.jakewharton:butterknife-compiler:$butterKnifeVersion"
     compile "com.jakewharton:butterknife:$butterKnifeVersion"
+
+    // constraint layout
+    //noinspection GradleCompatible
+    compile "com.android.support.constraint:constraint-layout:$constraintLayoutVersion"
 
     // design
     //noinspection GradleCompatible
