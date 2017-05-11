@@ -2,7 +2,7 @@
 
 <!-- layout for an item in the stocks widget -->
 
-<LinearLayout
+<RelativeLayout
 
     xmlns:android="http://schemas.android.com/apk/res/android"
 
@@ -10,7 +10,7 @@
 
     android:layout_width="match_parent"
 
-    android:layout_height="@dimen/list_item_height"
+    android:layout_height="?android:attr/listPreferredItemHeight"
 
     android:gravity="center_vertical"
 
@@ -28,66 +28,74 @@
 
         android:id="@+id/widget_list_item_tv_stock_symbol"
 
-        style="@style/StockSymbolTextStyle"
+        style="@style/StockSymbolWidgetTextStyle"
 
         android:layout_width="wrap_content"
 
         android:layout_height="wrap_content"
 
-        android:gravity="left|center_vertical"
+        android:layout_centerVertical="true"
 
         tools:text="GOOG"
 
         />
 
-    <LinearLayout
+    <TextView
 
-        android:layout_width="0dp"
+        android:id="@+id/widget_list_item_tv_change"
+
+        style="@style/PercentChangeWidgetTextStyle"
+
+        android:layout_width="wrap_content"
 
         android:layout_height="wrap_content"
 
-        android:layout_weight="1"
+        android:background="@drawable/percent_change_pill"
 
-        android:gravity="right"
+        android:paddingLeft="3dp"
 
-        >
+        android:paddingRight="3dp"
 
-        <TextView
+        tools:text="100%"
 
-            android:id="@+id/widget_list_item_tv_bid_price"
+        android:layout_alignParentEnd="true"
 
-            style="@style/BidPriceTextStyle"
+        android:layout_alignParentRight="true"
 
-            android:layout_width="wrap_content"
+        android:layout_centerVertical="true"
 
-            android:layout_height="wrap_content"
+        />
 
-            android:paddingRight="10sp"
+    <TextView
 
-            tools:text="1000.00"
+        android:id="@+id/widget_list_item_tv_bid_price"
 
-            />
+        style="@style/BidPriceWidgetTextStyle"
 
-        <TextView
+        android:layout_width="wrap_content"
 
-            android:id="@+id/widget_list_item_tv_change"
+        android:layout_height="wrap_content"
 
-            style="@style/PercentChangeTextStyle"
+        android:paddingRight="10sp"
 
-            android:layout_width="wrap_content"
+        tools:text="1000.00"
 
-            android:layout_height="wrap_content"
+        android:layout_marginRight="@dimen/layout_padding"
 
-            android:background="@drawable/percent_change_pill"
+        android:layout_marginEnd="@dimen/layout_padding"
 
-            android:paddingLeft="3dp"
+        android:layout_toEndOf="@id/widget_list_item_tv_stock_symbol"
 
-            android:paddingRight="3dp"
+        android:layout_toRightOf="@id/widget_list_item_tv_stock_symbol"
 
-            tools:text="100%"
+        android:layout_toStartOf="@id/widget_list_item_tv_change"
 
-            />
+        android:layout_toLeftOf="@id/widget_list_item_tv_change"
 
-    </LinearLayout>
+        android:gravity="end"
 
-</LinearLayout>
+        android:layout_centerVertical="true"
+
+        />
+
+</RelativeLayout>

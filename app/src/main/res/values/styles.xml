@@ -16,12 +16,27 @@
         <item name="android:textStyle">bold</item>
     </style>
 
+    <style name="PercentChangeWidgetTextStyle">
+        <item name="android:textSize">@dimen/widget_detail_change_text_size</item>
+        <item name="android:textColor">#FFF</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+
     <style name="BidPriceTextStyle">
         <item name="android:textSize">20sp</item>
     </style>
 
+    <style name="BidPriceWidgetTextStyle">
+        <item name="android:textSize">@dimen/widget_detail_bid_price_text_size</item>
+    </style>
+
     <style name="StockSymbolTextStyle">
         <item name="android:textSize">25sp</item>
+        <item name="android:textAllCaps">true</item>
+    </style>
+
+    <style name="StockSymbolWidgetTextStyle">
+        <item name="android:textSize">@dimen/widget_detail_stock_symbol_text_size</item>
         <item name="android:textAllCaps">true</item>
     </style>
 

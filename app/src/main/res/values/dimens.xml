@@ -12,6 +12,7 @@
     <dimen name="list_item_height">72dp</dimen>
 
     <!-- widget -->
+
     <!-- formula: size = 70dp * number-of-cells - 30dp -->
 
     <!-- detail list widget -->
@@ -22,5 +23,10 @@
     <dimen name="widget_detail_min_resize_width">180dp</dimen> <!-- 70 * 3 - 30 -->
     <dimen name="widget_detail_min_resize_height">@dimen/widget_detail_default_height</dimen>
     <!-- 70 * 3 - 30 -->
+
+    <!-- widget text sizes -->
+    <dimen name="widget_detail_stock_symbol_text_size">21sp</dimen> <!-- is 25sp usually -->
+    <dimen name="widget_detail_bid_price_text_size">16sp</dimen> <!-- is 20sp usually -->
+    <dimen name="widget_detail_change_text_size">16sp</dimen> <!-- is 20sp usually -->
 
 </resources>
