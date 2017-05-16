@@ -281,9 +281,39 @@ public class MyStocksActivity extends AppCompatActivity
         }
 
         if ( id == R.id.action_change_units ) {
+
             // this is for changing stock changes from percent value to dollar value
-            Utils.showPercent = !Utils.showPercent;
+
+            // 0. get the change units preference
+            // 1. flip it
+            // 2. store it in the preferences
+            // 3. update the content resolver
+            // 4. update the widgets
+
+            // 0. get the change units preference
+
+            String changeUnitsPreference = Utils.getChangeUnits( this );
+
+            // 1. flip it
+
+            changeUnitsPreference =
+                    changeUnitsPreference.equals(
+                            getString( R.string.pref_change_units_dollars_value ) ) ?
+                            getString( R.string.pref_change_units_percents_value ) :
+                            getString( R.string.pref_change_units_dollars_value );
+
+            // 2. store it in the preferences
+
+            Utils.setChangeUnits( this, changeUnitsPreference );
+
+            // 3. update the content resolver
+
             this.getContentResolver().notifyChange( QuoteProvider.Quotes.CONTENT_URI, null );
+
+            // 4. update the widgets
+
+            sendBroadcast( new Intent( BuildConfig.ACTION_DATA_UPDATED ) );
+
         }
 
         return super.onOptionsItemSelected( item );

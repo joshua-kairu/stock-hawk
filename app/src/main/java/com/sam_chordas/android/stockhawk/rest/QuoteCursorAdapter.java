@@ -66,7 +66,8 @@ public class QuoteCursorAdapter extends CursorRecyclerViewAdapter< QuoteCursorAd
                         mContext.getResources().getDrawable( R.drawable.percent_change_pill_red ) );
             }
         }
-        if ( Utils.showPercent ) {
+        if ( Utils.getChangeUnits( mContext ).equals(
+                mContext.getString( R.string.pref_change_units_percents_value ) ) ) {
             viewHolder.change.setText( cursor.getString( cursor.getColumnIndex( "percent_change" ) ) );
         } else {
             viewHolder.change.setText( cursor.getString( cursor.getColumnIndex( "change" ) ) );

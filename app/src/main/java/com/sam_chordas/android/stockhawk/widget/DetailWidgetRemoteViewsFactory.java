@@ -158,7 +158,8 @@ class DetailWidgetRemoteViewsFactory implements RemoteViewsService.RemoteViewsFa
 
         // 2d. (percent) change
 
-        if ( Utils.showPercent ) {
+        if ( Utils.getChangeUnits( mContext ).equals(
+                mContext.getString( R.string.pref_change_units_percents_value ) ) ) {
             views.setTextViewText( R.id.widget_list_item_tv_change,
                     mCursor.getString( STOCKS_COLUMN_PERCENT_CHANGE ) );
         } else {
