@@ -17,6 +17,10 @@ import com.sam_chordas.android.stockhawk.data.QuoteProvider;
 import com.sam_chordas.android.stockhawk.touch_helper.ItemTouchHelperAdapter;
 import com.sam_chordas.android.stockhawk.touch_helper.ItemTouchHelperViewHolder;
 
+import static com.sam_chordas.android.stockhawk.data.QuoteColumns.STOCKS_COLUMN_BIDPRICE;
+import static com.sam_chordas.android.stockhawk.data.QuoteColumns.STOCKS_COLUMN_ISUP;
+import static com.sam_chordas.android.stockhawk.data.QuoteColumns.STOCKS_COLUMN_SYMBOL;
+
 /**
  * Created by sam_chordas on 10/6/15.
  * Credit to skyfishjy gist:
@@ -46,25 +50,13 @@ public class QuoteCursorAdapter extends CursorRecyclerViewAdapter< QuoteCursorAd
 
     @Override
     public void onBindViewHolder( final ViewHolder viewHolder, final Cursor cursor ) {
-        viewHolder.symbol.setText( cursor.getString( cursor.getColumnIndex( "symbol" ) ) );
-        viewHolder.bidPrice.setText( cursor.getString( cursor.getColumnIndex( "bid_price" ) ) );
-        int sdk = Build.VERSION.SDK_INT;
-        if ( cursor.getInt( cursor.getColumnIndex( "is_up" ) ) == 1 ) {
-            if ( sdk < Build.VERSION_CODES.JELLY_BEAN ) {
-                viewHolder.change.setBackgroundDrawable(
-                        mContext.getResources().getDrawable( R.drawable.percent_change_pill_green ) );
-            } else {
-                viewHolder.change.setBackground(
-                        mContext.getResources().getDrawable( R.drawable.percent_change_pill_green ) );
-            }
-        } else {
-            if ( sdk < Build.VERSION_CODES.JELLY_BEAN ) {
-                viewHolder.change.setBackgroundDrawable(
-                        mContext.getResources().getDrawable( R.drawable.percent_change_pill_red ) );
-            } else {
-                viewHolder.change.setBackground(
-                        mContext.getResources().getDrawable( R.drawable.percent_change_pill_red ) );
-            }
+        viewHolder.symbol.setText( cursor.getString( STOCKS_COLUMN_SYMBOL ) );
+        viewHolder.bidPrice.setText( cursor.getString( STOCKS_COLUMN_BIDPRICE ) );
+        if ( cursor.getInt( STOCKS_COLUMN_ISUP ) == 1 ) {
+            viewHolder.change.setBackgroundResource( R.drawable.percent_change_pill_green );
+        }
+        else {
+            viewHolder.change.setBackgroundResource( R.drawable.percent_change_pill_red );
         }
         if ( Utils.getChangeUnits( mContext ).equals(
                 mContext.getString( R.string.pref_change_units_percents_value ) ) ) {
