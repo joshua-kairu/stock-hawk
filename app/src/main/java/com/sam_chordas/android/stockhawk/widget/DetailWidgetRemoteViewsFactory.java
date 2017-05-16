@@ -144,12 +144,6 @@ class DetailWidgetRemoteViewsFactory implements RemoteViewsService.RemoteViewsFa
 
         // 2c. up/down status
 
-        int sdk = Build.VERSION.SDK_INT;
-
-        // W/RemoteViewsAdapter: Error inflating RemoteViews at position: 3, usingloading view
-        // instead
-        // android.widget.RemoteViews$ActionException: view: android.widget.TextView doesn't have
-        // method: setBackground(int)
         // if the stock is up, show a green pill
         if ( mCursor.getInt( STOCKS_COLUMN_ISUP ) == 1 ) {
             views.setInt( R.id.widget_list_item_tv_change, "setBackgroundResource",
