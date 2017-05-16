@@ -60,7 +60,8 @@ public class QuoteCursorAdapter extends CursorRecyclerViewAdapter< QuoteCursorAd
         }
         if ( Utils.getChangeUnits( mContext ).equals(
                 mContext.getString( R.string.pref_change_units_percents_value ) ) ) {
-            viewHolder.change.setText( cursor.getString( cursor.getColumnIndex( "percent_change" ) ) );
+            viewHolder.change.setText( cursor.getString(
+                    cursor.getColumnIndex( "percent_change" ) ) );
         } else {
             viewHolder.change.setText( cursor.getString( cursor.getColumnIndex( "change" ) ) );
         }
@@ -71,7 +72,8 @@ public class QuoteCursorAdapter extends CursorRecyclerViewAdapter< QuoteCursorAd
         Cursor c = getCursor();
         c.moveToPosition( position );
         String symbol = c.getString( c.getColumnIndex( QuoteColumns.SYMBOL ) );
-        mContext.getContentResolver().delete( QuoteProvider.Quotes.withSymbol( symbol ), null, null );
+        mContext.getContentResolver().delete( QuoteProvider.Quotes.withSymbol( symbol ), null,
+                null );
         notifyItemRemoved( position );
     }
 
