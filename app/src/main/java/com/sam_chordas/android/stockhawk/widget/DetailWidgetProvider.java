@@ -3,11 +3,13 @@ package com.sam_chordas.android.stockhawk.widget;
 import android.app.PendingIntent;
 import android.appwidget.AppWidgetManager;
 import android.appwidget.AppWidgetProvider;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.support.v4.app.TaskStackBuilder;
 import android.widget.RemoteViews;
 
+import com.sam_chordas.android.stockhawk.BuildConfig;
 import com.sam_chordas.android.stockhawk.R;
 import com.sam_chordas.android.stockhawk.ui.MyStocksActivity;
 import com.sam_chordas.android.stockhawk.ui.StockDetailActivity;
@@ -102,6 +104,47 @@ public class DetailWidgetProvider extends AppWidgetProvider {
         } // end for through all widgets managed by this provider
 
     } // end onUpdate
+
+    /**
+     * Receives the {@link BuildConfig#ACTION_DATA_UPDATED} broadcast and updates the widget
+     * accordingly.
+     * */
+    @Override
+    // begin onReceive
+    public void onReceive( Context context, Intent intent ) {
+
+        // 0. super stuff
+        // 1. if we receive the update action
+        // 1a. get the widget manager
+        // 1b. get the widget IDs for our detail widget
+        // 1c. notify the list that data has changed
+
+        // 0. super stuff
+
+        super.onReceive( context, intent );
+
+        // 1. if we receive the update action
+
+        // begin if we have the update action
+        if ( intent != null && intent.getAction().equals( BuildConfig.ACTION_DATA_UPDATED ) ) {
+
+            // 1a. get the widget manager
+
+            AppWidgetManager appWidgetManager = AppWidgetManager.getInstance( context );
+
+            // 1b. get the widget IDs for our detail widget
+
+            int[] appWidgetIds = appWidgetManager.getAppWidgetIds(
+                    new ComponentName( context, DetailWidgetProvider.class ) );
+
+            // 1c. notify the list that data has changed
+
+            appWidgetManager.notifyAppWidgetViewDataChanged( appWidgetIds,
+                    R.id.widget_detail_lv_stocks );
+
+        } // end if we have the update action
+
+    } // end onReceive
 
     /* Other Methods */
 
