@@ -35,4 +35,15 @@
     <!-- message for when there are no stocks to display [CHAR LIMIT = 30] -->
     <string name="message_error_no_stocks_info">No Stocks Info Available</string>
 
+    <!-- preferences -->
+
+    <!-- key for storing the change units preference [CHAR LIMIT = NONE] -->
+    <string name="pref_change_units_key" translatable="false">change_units</string>
+
+    <!-- show change units as dollars [CHAR LIMIT = NONE] -->
+    <string name="pref_change_units_dollars_value" translatable="false">dollars</string>
+
+    <!-- show change units as percents [CHAR LIMIT = NONE] -->
+    <string name="pref_change_units_percents_value" translatable="false">percents</string>
+
 </resources>

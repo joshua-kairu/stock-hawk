@@ -1,9 +1,12 @@
 package com.sam_chordas.android.stockhawk.rest;
 
 import android.content.ContentProviderOperation;
+import android.content.Context;
+import android.preference.PreferenceManager;
 import android.util.Log;
 
 import com.google.android.gms.gcm.TaskParams;
+import com.sam_chordas.android.stockhawk.R;
 import com.sam_chordas.android.stockhawk.data.QuoteColumns;
 import com.sam_chordas.android.stockhawk.data.QuoteProvider;
 
@@ -18,7 +21,6 @@ import org.json.JSONObject;
  */
 public class Utils {
 
-    public static boolean showPercent = true;
     private static String LOG_TAG = Utils.class.getSimpleName();
 
     public static ArrayList quoteJsonToContentVals( String JSON ) {
@@ -285,5 +287,38 @@ public class Utils {
         return null; // because we have no other option by now
 
     } // end method getSymbolFromJSON
+
+    /**
+     * Sets the change units preference.
+     *
+     * @param context Android {@link Context}
+     * @param changeUnitsValueString The string we will store in the preferences as the preferred
+     *                               change units
+     * */
+    // begin method setChangeUnits
+    public static void setChangeUnits( Context context, String changeUnitsValueString ) {
+
+        PreferenceManager.getDefaultSharedPreferences( context ).edit()
+                .putString( context.getString( R.string.pref_change_units_key ),
+                        changeUnitsValueString )
+                .apply();
+
+    } // end method setChangeUnits
+
+    /**
+     * Gets the user's preferred change units, or dollars by default.
+     *
+     * @param context Android {@link Context}
+     *
+     * @return The user's preferred change units, or dollars by default.
+     * */
+    // begin method getChangeUnits
+    public static String getChangeUnits( Context context ) {
+
+        return PreferenceManager.getDefaultSharedPreferences( context )
+                .getString( context.getString( R.string.pref_change_units_key ),
+                        context.getString( R.string.pref_change_units_dollars_value ) );
+
+    } // end method getChangeUnits
 
 }
