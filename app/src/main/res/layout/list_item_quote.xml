@@ -2,6 +2,8 @@
 
 <!-- layout for the stock list item -->
 
+<!-- todo Convert to ConstraintLayout -->
+
 <RelativeLayout
 
     xmlns:android="http://schemas.android.com/apk/res/android"
