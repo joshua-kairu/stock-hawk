@@ -285,7 +285,8 @@ public class MyStocksActivity extends AppCompatActivity
             // this is for changing stock changes from percent value to dollar value
 
             // 0. get the change units preference
-            // 1. flip it
+            // 1. flip it and the icon
+            // (so if I am seeing dollars and I want to see percents I should tap on percent)
             // 2. store it in the preferences
             // 3. update the content resolver
             // 4. update the widgets
@@ -294,13 +295,23 @@ public class MyStocksActivity extends AppCompatActivity
 
             String changeUnitsPreference = Utils.getChangeUnits( this );
 
-            // 1. flip it
+            // 1. flip it and the icon
 
-            changeUnitsPreference =
-                    changeUnitsPreference.equals(
-                            getString( R.string.pref_change_units_dollars_value ) ) ?
-                            getString( R.string.pref_change_units_percents_value ) :
-                            getString( R.string.pref_change_units_dollars_value );
+            // if we're showing dollars the menu item should be a percent
+            // if we're showing percents the menu item should be a dollar
+
+            if ( changeUnitsPreference.equals(
+                    getString( R.string.pref_change_units_dollars_value ) ) ) {
+                changeUnitsPreference = getString( R.string.pref_change_units_percents_value );
+                item.setIcon( R.drawable.ic_attach_money_white_24dp ); /* show a dollar since by
+                this time the changes will be displayed as percents */
+            }
+
+            else {
+                changeUnitsPreference = getString( R.string.pref_change_units_dollars_value );
+                item.setIcon( R.drawable.ic_percent_white_24dp ); /* show a percent since by
+                this time the changes will be displayed as dollars */
+            }
 
             // 2. store it in the preferences
 
