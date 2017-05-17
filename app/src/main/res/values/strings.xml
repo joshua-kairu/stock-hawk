@@ -2,12 +2,17 @@
 
     <string name="app_name">Stock Hawk</string>
 
+    <!-- a11y -->
+
+    <!-- content description for the add stock FAB [CHAR LIMIT = 15] -->
+    <string name="a11y_add_stock_fab">Add a stock</string>
+
     <!-- titles -->
 
-    <!-- The title of the detail activity [CHAR LIMIT = 15] -->
+    <!-- the title of the detail activity [CHAR LIMIT = 15] -->
     <string name="title_activity_detail">Stock Detail</string>
 
-    <!-- The title of the stocks list widget [CHAR LIMIT = 20] -->
+    <!-- the title of the stocks list widget [CHAR LIMIT = 20] -->
     <string name="title_widget_stocks">StockHawk Stocks</string>
 
     <string name="action_example">Example action</string>
@@ -20,9 +25,9 @@
     <string name="input_prefill"></string>
     <string name="network_toast">Uh-oh! This app requires an internet connection</string>
 
-    <!-- Formatted strings -->
+    <!-- formatted strings -->
 
-    <!-- Formatter for a message to inform the user that a the stock symbol they have input points
+    <!-- formatter for a message to inform the user that a the stock symbol they have input points
     to a nonexistent stock. For example, if the user says to search for the stock symbol "ANTE"
      (which does not exist), this message should read, "ANTE is a nonexistent stock"
      [CHAR LIMIT = NONE]-->
