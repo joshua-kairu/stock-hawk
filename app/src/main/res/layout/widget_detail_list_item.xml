@@ -22,6 +22,10 @@
 
     android:id="@+id/widget_list_item"
 
+    android:background="@color/list_item_background_color"
+
+    android:foreground="?android:attr/selectableItemBackground"
+
     >
 
     <TextView
