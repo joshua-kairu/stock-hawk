@@ -149,8 +149,10 @@ public class StockTaskService extends GcmTaskService {
 
                 // catch number formats
                 catch ( NumberFormatException e ) {
-                    EventBus.getDefault().post( new NoSuchStockEvent(
-                            Utils.getSymbolFromJSON( getResponse ) ) );
+                    if ( getResponse != null ) {
+                        EventBus.getDefault().post( new NoSuchStockEvent(
+                                Utils.getSymbolFromJSON( getResponse ) ) );
+                    }
                 }
 
             } catch ( IOException e ) {
