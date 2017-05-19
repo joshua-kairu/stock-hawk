@@ -46,6 +46,7 @@ public class QuoteColumns {
     @DataType( DataType.Type.INTEGER )
     @NotNull
     public static final String ISCURRENT = "is_current"; // if this is the current stock value
+    // 0 means it is not current, 1 means the current stock value is hot off the press
 
     /* Arrays */
 

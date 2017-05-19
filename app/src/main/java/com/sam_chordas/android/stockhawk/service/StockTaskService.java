@@ -132,6 +132,8 @@ public class StockTaskService extends GcmTaskService {
                 try {
                     ContentValues contentValues = new ContentValues();
                     // update ISCURRENT to 0 (false) so new data is current
+                    // this is done before new data is added. All new data added is given an
+                    // ISCURRENT value of 1 (true), showing that it is fresh.
                     if ( isUpdate ) {
                         contentValues.put( QuoteColumns.ISCURRENT, 0 );
                         mContext.getContentResolver().update( QuoteProvider.Quotes.CONTENT_URI,

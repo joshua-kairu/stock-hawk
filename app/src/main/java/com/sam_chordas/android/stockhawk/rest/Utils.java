@@ -86,7 +86,7 @@ public class Utils {
             builder.withValue( QuoteColumns.PERCENT_CHANGE, truncateChange(
                     jsonObject.getString( "ChangeinPercent" ), true ) );
             builder.withValue( QuoteColumns.CHANGE, truncateChange( change, false ) );
-            builder.withValue( QuoteColumns.ISCURRENT, 1 );
+            builder.withValue( QuoteColumns.ISCURRENT, 1 ); // this is the latest, current-est value
             if ( change.charAt( 0 ) == '-' ) {
                 builder.withValue( QuoteColumns.ISUP, 0 );
             } else {
