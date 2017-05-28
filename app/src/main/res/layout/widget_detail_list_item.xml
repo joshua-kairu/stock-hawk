@@ -80,8 +80,6 @@
 
         android:layout_height="wrap_content"
 
-        android:paddingRight="10sp"
-
         tools:text="1000.00"
 
         android:layout_marginRight="@dimen/layout_padding"
