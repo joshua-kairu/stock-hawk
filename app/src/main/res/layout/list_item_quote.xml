@@ -2,21 +2,19 @@
 
 <!-- layout for the stock list item -->
 
-<!-- todo Convert to ConstraintLayout -->
+<!-- todo Convert to support GridLayout to avoid text displacement due to numbers -->
 
-<RelativeLayout
+<android.support.constraint.ConstraintLayout
 
     xmlns:android="http://schemas.android.com/apk/res/android"
+
+    xmlns:app="http://schemas.android.com/apk/res-auto"
 
     xmlns:tools="http://schemas.android.com/tools"
 
     android:layout_width="match_parent"
 
     android:layout_height="@dimen/list_item_height"
-
-    android:paddingLeft="@dimen/layout_padding"
-
-    android:paddingRight="@dimen/layout_padding"
 
     android:background="@color/list_item_background_color"
 
@@ -34,9 +32,51 @@
 
         android:layout_height="wrap_content"
 
-        android:layout_centerVertical="true"
-
         tools:text="GOOG"
+
+        android:layout_marginStart="16dp"
+
+        app:layout_constraintLeft_toLeftOf="parent"
+
+        android:layout_marginLeft="16dp"
+
+        app:layout_constraintTop_toTopOf="parent"
+
+        android:layout_marginTop="8dp"
+
+        app:layout_constraintBottom_toBottomOf="parent"
+
+        android:layout_marginBottom="8dp"
+
+        />
+
+    <!-- todo bid price text moves to the left when dollar change > 10.00, for example +14.58 -->
+
+    <TextView
+
+        android:id="@+id/bid_price"
+
+        style="@style/BidPriceTextStyle"
+
+        android:layout_width="wrap_content"
+
+        android:layout_height="wrap_content"
+
+        tools:text="1000.00"
+
+        android:gravity="end"
+
+        app:layout_constraintRight_toLeftOf="@+id/change"
+
+        android:layout_marginRight="16dp"
+
+        app:layout_constraintTop_toTopOf="parent"
+
+        android:layout_marginTop="8dp"
+
+        app:layout_constraintBottom_toBottomOf="parent"
+
+        android:layout_marginBottom="8dp"
 
         />
 
@@ -58,44 +98,18 @@
 
         tools:text="100%"
 
-        android:layout_alignParentEnd="true"
+        android:layout_marginRight="16dp"
 
-        android:layout_alignParentRight="true"
+        app:layout_constraintRight_toRightOf="parent"
 
-        android:layout_centerVertical="true"
+        app:layout_constraintTop_toTopOf="parent"
 
-        />
+        android:layout_marginTop="8dp"
 
-    <TextView
+        app:layout_constraintBottom_toBottomOf="parent"
 
-        android:id="@+id/bid_price"
-
-        style="@style/BidPriceTextStyle"
-
-        android:layout_width="wrap_content"
-
-        android:layout_height="wrap_content"
-
-        android:paddingRight="10sp"
-
-        tools:text="1000.00"
-
-        android:layout_marginRight="@dimen/layout_padding"
-
-        android:layout_marginEnd="@dimen/layout_padding"
-
-        android:layout_toStartOf="@id/change"
-
-        android:layout_toLeftOf="@id/change"
-
-        android:layout_toEndOf="@id/stock_symbol"
-
-        android:layout_toRightOf="@id/stock_symbol"
-
-        android:gravity="end"
-
-        android:layout_centerVertical="true"
+        android:layout_marginBottom="8dp"
 
         />
 
-</RelativeLayout>
+</android.support.constraint.ConstraintLayout>
