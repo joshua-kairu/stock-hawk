@@ -6,6 +6,7 @@ import android.graphics.Color;
 import android.graphics.Typeface;
 import android.os.Build;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,6 +17,7 @@ import com.sam_chordas.android.stockhawk.data.QuoteColumns;
 import com.sam_chordas.android.stockhawk.data.QuoteProvider;
 import com.sam_chordas.android.stockhawk.touch_helper.ItemTouchHelperAdapter;
 import com.sam_chordas.android.stockhawk.touch_helper.ItemTouchHelperViewHolder;
+import com.sam_chordas.android.stockhawk.ui.QuoteAdapterOnClickHandler;
 
 import static com.sam_chordas.android.stockhawk.data.QuoteColumns.STOCKS_COLUMN_BIDPRICE;
 import static com.sam_chordas.android.stockhawk.data.QuoteColumns.STOCKS_COLUMN_ISUP;
@@ -23,20 +25,26 @@ import static com.sam_chordas.android.stockhawk.data.QuoteColumns.STOCKS_COLUMN_
 
 /**
  * Created by sam_chordas on 10/6/15.
+ * Modified by Joshua Kairu a year or so later.
  * Credit to skyfishjy gist:
  * https://gist.github.com/skyfishjy/443b7448f59be978bc59
  * for the code structure
  */
+// begin class QuoteCursorAdapter
 public class QuoteCursorAdapter extends CursorRecyclerViewAdapter< QuoteCursorAdapter.ViewHolder >
         implements ItemTouchHelperAdapter {
 
     private static Context mContext;
     private static Typeface robotoLight;
-    private boolean isPercent;
 
-    public QuoteCursorAdapter( Context context, Cursor cursor ) {
+    public QuoteAdapterOnClickHandler mClickHandler; // ditto
+
+
+    public QuoteCursorAdapter( Context context, Cursor cursor,
+                               QuoteAdapterOnClickHandler handler  ) {
         super( context, cursor );
         mContext = context;
+        mClickHandler = handler;
     }
 
     @Override
@@ -44,8 +52,7 @@ public class QuoteCursorAdapter extends CursorRecyclerViewAdapter< QuoteCursorAd
         robotoLight = Typeface.createFromAsset( mContext.getAssets(), "fonts/Roboto-Light.ttf" );
         View itemView = LayoutInflater.from( parent.getContext() )
                 .inflate( R.layout.list_item_quote, parent, false );
-        ViewHolder vh = new ViewHolder( itemView );
-        return vh;
+        return new ViewHolder( itemView, this );
     }
 
     @Override
@@ -82,19 +89,41 @@ public class QuoteCursorAdapter extends CursorRecyclerViewAdapter< QuoteCursorAd
         return super.getItemCount();
     }
 
+    /** The quote {@link android.support.v7.widget.RecyclerView.ViewHolder}. */
+    // begin static class ViewHolder
     public static class ViewHolder extends RecyclerView.ViewHolder
             implements ItemTouchHelperViewHolder, View.OnClickListener {
+
+        /* CONSTANTS */
+
+        /* Integers */
+
+        /* Strings */
+
+        /* VARIABLES */
+
         public final TextView symbol;
         public final TextView bidPrice;
         public final TextView change;
+        public QuoteCursorAdapter mHostAdapter; // ditto
 
-        public ViewHolder( View itemView ) {
+        /* CONSTRUCTOR */
+
+        public ViewHolder( View itemView, QuoteCursorAdapter adapter ) {
             super( itemView );
             symbol = ( TextView ) itemView.findViewById( R.id.stock_symbol );
             symbol.setTypeface( robotoLight );
             bidPrice = ( TextView ) itemView.findViewById( R.id.bid_price );
             change = ( TextView ) itemView.findViewById( R.id.change );
+            mHostAdapter = adapter;
+            itemView.setOnClickListener( this );
         }
+
+        /* METHODS */
+
+        /* Getters and Setters */
+
+        /* Overrides */
 
         @Override
         public void onItemSelected() {
@@ -103,12 +132,19 @@ public class QuoteCursorAdapter extends CursorRecyclerViewAdapter< QuoteCursorAd
 
         @Override
         public void onItemClear() {
-            itemView.setBackgroundColor( 0 );
+            itemView.setBackgroundColor(
+                    mContext.getResources().getColor( R.color.list_item_background_color ) );
         }
 
+        /** Handles a tap on this list item by calling
+         * {@link QuoteAdapterOnClickHandler#onClick(int)}. */
         @Override
         public void onClick( View v ) {
-
+            mHostAdapter.mClickHandler.onClick( getAdapterPosition() );
         }
-    }
-}
+
+        /* Other Methods */
+
+    } // end static class ViewHolder
+
+} // end class QuoteCursorAdapter

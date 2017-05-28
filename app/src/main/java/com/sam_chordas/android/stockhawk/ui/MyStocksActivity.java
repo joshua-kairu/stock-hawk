@@ -43,7 +43,7 @@ import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
 public class MyStocksActivity extends AppCompatActivity
-        implements LoaderManager.LoaderCallbacks< Cursor > {
+        implements LoaderManager.LoaderCallbacks< Cursor >, QuoteAdapterOnClickHandler {
 
     /* CONSTANTS */
 
@@ -105,48 +105,8 @@ public class MyStocksActivity extends AppCompatActivity
         recyclerView.setLayoutManager( new LinearLayoutManager( this ) );
         getLoaderManager().initLoader( CURSOR_LOADER_ID, null, this );
 
-        mCursorAdapter = new QuoteCursorAdapter( this, null );
-        recyclerView.addOnItemTouchListener( new RecyclerViewItemClickListener( this,
-                new RecyclerViewItemClickListener.OnItemClickListener() {
-                    @Override
-                    public void onItemClick( View v, int position ) {
+        mCursorAdapter = new QuoteCursorAdapter( this, null, this );
 
-                        // 0. start the stock detail activity with the correct symbol
-                        // 0a. confirm we have a cursor
-                        // 0a0. move the cursor to this item's position
-                        // 0a1. get the symbol at this position
-                        // 0a2. add the symbol to the detail intent
-                        // 0a3. start the detail activity via the detail intent
-
-                        // 0. start the stock detail activity with the correct symbol
-
-                        // 0a. confirm we have a cursor
-
-                        // begin if we have a cursor
-                        if ( mCursor != null ) {
-
-                            // 0a0. move the cursor to this item's position
-
-                            mCursor.moveToPosition( position );
-
-                            // 0a1. get the symbol at this position
-
-                            String symbol = mCursor.getString( QuoteColumns.STOCKS_COLUMN_SYMBOL );
-
-                            // 0a2. add the symbol to the detail intent
-
-                            Intent detailIntent = new Intent( MyStocksActivity.this,
-                                    StockDetailActivity.class )
-                                    .putExtra( StockDetailActivity.KEY_SYMBOL, symbol );
-
-                            // 0a3. start the detail activity via the detail intent
-
-                            startActivity( detailIntent );
-
-                        } // end if we have a cursor
-
-                    }
-                } ) );
         recyclerView.setAdapter( mCursorAdapter );
 
         FloatingActionButton fab = ( FloatingActionButton ) findViewById( R.id.fab );
@@ -350,6 +310,47 @@ public class MyStocksActivity extends AppCompatActivity
     public void onLoaderReset( Loader< Cursor > loader ) {
         mCursorAdapter.swapCursor( null );
     }
+
+    /** Click handler for when an item on the quote list is tapped. */
+    @Override
+    // begin onClick
+    public void onClick( int position ) {
+
+        // 0. start the stock detail activity with the correct symbol
+        // 0a. confirm we have a cursor
+        // 0a0. move the cursor to this item's position
+        // 0a1. get the symbol at this position
+        // 0a2. add the symbol to the detail intent
+        // 0a3. start the detail activity via the detail intent
+
+        // 0. start the stock detail activity with the correct symbol
+
+        // 0a. confirm we have a cursor
+
+        // begin if we have a cursor
+        if ( mCursor != null ) {
+
+            // 0a0. move the cursor to this item's position
+
+            mCursor.moveToPosition( position );
+
+            // 0a1. get the symbol at this position
+
+            String symbol = mCursor.getString( QuoteColumns.STOCKS_COLUMN_SYMBOL );
+
+            // 0a2. add the symbol to the detail intent
+
+            Intent detailIntent = new Intent( MyStocksActivity.this,
+                    StockDetailActivity.class )
+                    .putExtra( StockDetailActivity.KEY_SYMBOL, symbol );
+
+            // 0a3. start the detail activity via the detail intent
+
+            startActivity( detailIntent );
+
+        } // end if we have a cursor
+
+    } // end onClick
 
     /* Other Methods */
 
