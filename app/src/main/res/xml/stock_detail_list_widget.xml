@@ -24,6 +24,8 @@ itself. -->
 
     android:updatePeriodMillis="0"
 
+    android:previewImage="@drawable/widget_preview_detail"
+
     android:resizeMode="horizontal|vertical"
 
     android:widgetCategory="home_screen|keyguard"
