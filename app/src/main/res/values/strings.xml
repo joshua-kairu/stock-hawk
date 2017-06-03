@@ -20,6 +20,7 @@
     <string name="symbol_search">Symbol Search</string>
     <string name="content_test">Search for a Stock Symbol</string>
     <string name="input_hint">FB</string>
+    <string name="input_prefill" /> <!-- Prefill for the add stock dialog -->
     <string name="network_toast">Uh-oh! This app requires an internet connection</string>
 
     <!-- formatted strings -->
