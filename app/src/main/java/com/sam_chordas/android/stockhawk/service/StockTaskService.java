@@ -8,7 +8,6 @@ import android.database.Cursor;
 import android.database.DatabaseUtils;
 import android.os.RemoteException;
 import android.util.Log;
-import android.widget.Toast;
 
 import com.google.android.gms.gcm.GcmNetworkManager;
 import com.google.android.gms.gcm.GcmTaskService;
@@ -139,10 +138,14 @@ public class StockTaskService extends GcmTaskService {
                         mContext.getContentResolver().update( QuoteProvider.Quotes.CONTENT_URI,
                                 contentValues, null, null );
 
-                        // update the widgets
-                        updateWidgets();
+                        // update the widget
+                        updateWidget();
 
                     }
+
+                    // if we've added a new stock, we should let the widget know of that
+                    if ( params.getTag().equals( "add" ) ) { updateWidget(); }
+
                     mContext.getContentResolver().applyBatch( QuoteProvider.AUTHORITY,
                             Utils.quoteJsonToContentVals( getResponse ) );
                 } catch ( RemoteException | OperationApplicationException e ) {
@@ -177,12 +180,12 @@ public class StockTaskService extends GcmTaskService {
     }
 
     /**
-     * Helper method to update the widgets.
+     * Helper method to update the collection widget.
      *
      * This is done by sending a BuildConfig.ACTION_DATA_UPDATED broadcast.
      *  */
-    // begin method updateWidgets
-    private void updateWidgets() {
+    // begin method updateWidget
+    private void updateWidget() {
 
         // 0. send the data changed broadcast
 
@@ -191,6 +194,6 @@ public class StockTaskService extends GcmTaskService {
         Intent dataUpdatedIntent = new Intent( BuildConfig.ACTION_DATA_UPDATED );
         mContext.sendBroadcast( dataUpdatedIntent );
 
-    } // end method updateWidgets
+    } // end method updateWidget
 
 }
