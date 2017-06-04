@@ -28,8 +28,8 @@
     <!-- formatter for a message to inform the user that a the stock symbol they have input points
     to a nonexistent stock. For example, if the user says to search for the stock symbol "ANTE"
      (which does not exist), this message should read, "ANTE is a nonexistent stock"
-     [CHAR LIMIT = NONE]-->
-    <string name="message_no_such_stock_format" translatable="false">
+     [CHAR LIMIT = 30]-->
+    <string name="message_no_such_stock_format">
         <xliff:g id="symbol">%1$s</xliff:g> is a nonexistent stock
     </string>
 
