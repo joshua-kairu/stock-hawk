@@ -15,20 +15,30 @@
     <!-- Title for the details widget. [CHAR LIMIT = 20] -->
     <string name="title_widget_details">StockHawk Details</string>
 
+    <!-- the title of the settings menu button [CHAR LIMIT = 10] -->
     <string name="action_settings">Settings</string>
+
+    <!-- the title of the change units menu button [CHAR LIMIT = 15] -->
     <string name="action_change_units">Change Units</string>
+
+    <!-- the title of the symbol search dialog [CHAR LIMIT = 15] -->
     <string name="symbol_search">Symbol Search</string>
-    <string name="content_test">Search for a Stock Symbol</string>
-    <string name="input_hint">FB</string>
-    <string name="input_prefill" /> <!-- Prefill for the add stock dialog -->
-    <string name="network_toast">Uh-oh! This app requires an internet connection</string>
+
+    <!-- the content of the symbol search dialog [CHAR LIMIT = 30] -->
+    <string name="symbol_search_title">Search for a Stock Symbol</string>
+
+    <!-- the hint of the symbol search dialog [CHAR LIMIT = 5] -->
+    <string name="symbol_search_input_hint">FB</string>
+
+    <!-- prefill for the symbol search dialog [CHAR LIMIT = 0] -->
+    <string name="symbol_search_input_prefill" />
 
     <!-- formatted strings -->
 
     <!-- formatter for a message to inform the user that a the stock symbol they have input points
     to a nonexistent stock. For example, if the user says to search for the stock symbol "ANTE"
-     (which does not exist), this message should read, "ANTE is a nonexistent stock"
-     [CHAR LIMIT = 30]-->
+    (which does not exist), this message should read, "ANTE is a nonexistent stock"
+    [CHAR LIMIT = 30]-->
     <string name="message_no_such_stock_format">
         <xliff:g id="symbol">%1$s</xliff:g> is a nonexistent stock
     </string>
@@ -37,6 +47,9 @@
 
     <!-- message for when there are no stocks to display [CHAR LIMIT = 30] -->
     <string name="message_error_no_stocks_info">No Stocks Info Available</string>
+
+    <!-- message for when there is no network [CHAR LIMIT = 55] -->
+    <string name="message_error_no_network">Uh-oh! This app requires an internet connection</string>
 
     <!-- preferences -->
 

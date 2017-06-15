@@ -29,7 +29,6 @@ import com.sam_chordas.android.stockhawk.data.QuoteColumns;
 import com.sam_chordas.android.stockhawk.data.QuoteProvider;
 import com.sam_chordas.android.stockhawk.event.NoSuchStockEvent;
 import com.sam_chordas.android.stockhawk.rest.QuoteCursorAdapter;
-import com.sam_chordas.android.stockhawk.rest.RecyclerViewItemClickListener;
 import com.sam_chordas.android.stockhawk.rest.Utils;
 import com.sam_chordas.android.stockhawk.service.StockIntentService;
 import com.sam_chordas.android.stockhawk.service.StockTaskService;
@@ -115,9 +114,9 @@ public class MyStocksActivity extends AppCompatActivity
             public void onClick( View v ) {
                 if ( isConnected ) {
                     new MaterialDialog.Builder( mContext ).title( R.string.symbol_search )
-                            .content( R.string.content_test )
+                            .content( R.string.symbol_search_title )
                             .inputType( InputType.TYPE_CLASS_TEXT )
-                            .input( R.string.input_hint, R.string.input_prefill,
+                            .input( R.string.symbol_search_input_hint, R.string.symbol_search_input_prefill,
                                     new MaterialDialog.InputCallback() {
 
                                         @Override
@@ -355,7 +354,7 @@ public class MyStocksActivity extends AppCompatActivity
     /* Other Methods */
 
     public void networkToast() {
-        Toast.makeText( mContext, getString( R.string.network_toast ), Toast.LENGTH_SHORT ).show();
+        Toast.makeText( mContext, getString( R.string.message_error_no_network ), Toast.LENGTH_SHORT ).show();
     }
 
     public void restoreActionBar() {
