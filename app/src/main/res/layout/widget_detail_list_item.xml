@@ -16,9 +16,9 @@
 
     android:orientation="horizontal"
 
-    android:paddingLeft="@dimen/layout_padding"
+    android:paddingStart="@dimen/layout_padding"
 
-    android:paddingRight="@dimen/layout_padding"
+    android:paddingEnd="@dimen/layout_padding"
 
     android:id="@+id/widget_list_item"
 
@@ -56,9 +56,9 @@
 
         android:background="@drawable/percent_change_pill"
 
-        android:paddingLeft="3dp"
+        android:paddingStart="3dp"
 
-        android:paddingRight="3dp"
+        android:paddingEnd="3dp"
 
         tools:text="100%"
 

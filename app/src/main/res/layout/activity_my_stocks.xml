@@ -2,6 +2,8 @@
 
 <!-- todo what about when you have a long list? Won't the FAB occlude? -->
 
+<!--todo test the layouts-->
+
 <FrameLayout
 
     xmlns:android="http://schemas.android.com/apk/res/android"
@@ -32,9 +34,9 @@
 
       android:layout_height="wrap_content"
 
-      android:layout_gravity="bottom|right"
+      android:layout_gravity="bottom|end"
 
-      android:layout_margin="16dp"
+      android:layout_margin="@dimen/layout_padding"
 
       app:srcCompat="@drawable/ic_add_white_24dp"
 
