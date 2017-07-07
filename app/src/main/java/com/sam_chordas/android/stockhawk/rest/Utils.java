@@ -12,6 +12,7 @@ import com.sam_chordas.android.stockhawk.data.QuoteProvider;
 
 import java.util.ArrayList;
 import java.util.Locale;
+import java.util.Objects;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -23,6 +24,112 @@ import org.json.JSONObject;
 public class Utils {
 
     private static String LOG_TAG = Utils.class.getSimpleName();
+
+    /**
+     *
+     * JSON from Yahoo
+     *
+     {
+     "query":{
+         "count":4,
+         "created":"2017-07-07T14:54:21Z",
+         "lang":"en-US",
+         "diagnostics":{  },
+         "results":{
+             "quote":[
+                 {
+                     "symbol":"YHOO",
+                     "Ask":null,
+                     "AverageDailyVolume":"19798100",
+                     "Bid":null,
+                     "AskRealtime":null,
+                     "BidRealtime":null,
+                     "BookValue":"0.00",
+                     "Change_PercentChange":"+0.00 - +0.00%",
+                     "Change":"+0.00",
+                     "Commission":null,
+                     "Currency":null,
+                     "ChangeRealtime":null,
+                     "AfterHoursChangeRealtime":null,
+                     "DividendShare":null,
+                     "LastTradeDate":null,
+                     "TradeDate":null,
+                     "EarningsShare":"-0.03",
+                     "ErrorIndicationreturnedforsymbolchangedinvalid":null,
+                     "EPSEstimateCurrentYear":"0.71",
+                     "EPSEstimateNextYear":"0.72",
+                     "EPSEstimateNextQuarter":"0.18",
+                     "DaysLow":null,
+                     "DaysHigh":null,
+                     "YearLow":"35.05",
+                     "YearHigh":"57.39",
+                     "HoldingsGainPercent":null,
+                     "AnnualizedGain":null,
+                     "HoldingsGain":null,
+                     "HoldingsGainPercentRealtime":null,
+                     "HoldingsGainRealtime":null,
+                     "MoreInfo":null,
+                     "OrderBookRealtime":null,
+                     "MarketCapitalization":null,
+                     "MarketCapRealtime":null,
+                     "EBITDA":"0.00",
+                     "ChangeFromYearLow":null,
+                     "PercentChangeFromYearLow":null,
+                     "LastTradeRealtimeWithTime":null,
+                     "ChangePercentRealtime":null,
+                     "ChangeFromYearHigh":null,
+                     "PercebtChangeFromYearHigh":null,
+                     "LastTradeWithTime":null,
+                     "LastTradePriceOnly":null,
+                     "HighLimit":null,
+                     "LowLimit":null,
+                     "DaysRange":null,
+                     "DaysRangeRealtime":null,
+                     "FiftydayMovingAverage":"50.51",
+                     "TwoHundreddayMovingAverage":"45.66",
+                     "ChangeFromTwoHundreddayMovingAverage":null,
+                     "PercentChangeFromTwoHundreddayMovingAverage":null,
+                     "ChangeFromFiftydayMovingAverage":null,
+                     "PercentChangeFromFiftydayMovingAverage":null,
+                     "Name":null,
+                     "Notes":null,
+                     "Open":null,
+                     "PreviousClose":null,
+                     "PricePaid":null,
+                     "ChangeinPercent":"+0.00%",
+                     "PriceSales":null,
+                     "PriceBook":null,
+                     "ExDividendDate":null,
+                     "PERatio":null,
+                     "DividendPayDate":null,
+                     "PERatioRealtime":null,
+                     "PEGRatio":"12.79",
+                     "PriceEPSEstimateCurrentYear":null,
+                     "PriceEPSEstimateNextYear":null,
+                     "Symbol":"YHOO",
+                     "SharesOwned":null,
+                     "ShortRatio":"0.00",
+                     "LastTradeTime":null,
+                     "TickerTrend":null,
+                     "OneyrTargetPrice":"54.08",
+                     "Volume":"0",
+                     "HoldingsValue":null,
+                     "HoldingsValueRealtime":null,
+                     "YearRange":"35.05 - 57.39",
+                     "DaysValueChange":null,
+                     "DaysValueChangeRealtime":null,
+                     "StockExchange":"NMS",
+                     "DividendYield":null,
+                     "PercentChange":"+0.00%"
+                 },
+                 {
+                     and others
+                 }
+             ]
+         }
+     }
+     *
+     * */
 
     public static ArrayList quoteJsonToContentVals( String JSON ) {
         ArrayList< ContentProviderOperation > batchOperations = new ArrayList<>();
@@ -80,14 +187,29 @@ public class Utils {
         ContentProviderOperation.Builder builder = ContentProviderOperation.newInsert(
                 QuoteProvider.Quotes.CONTENT_URI );
         try {
+
+            /*
+             "symbol":"YHOO",
+             "Bid":null,
+             "Change":"+0.00",
+             "ChangeinPercent":"+0.00%",
+             * */
+
+            // if the bid price is null, just show zeros as the bid price. otherwise this will
+            // cause unnecessary NumberFormatExceptions
+
             String change = jsonObject.getString( "Change" );
+            String bidPrice = jsonObject.getString( "Bid" );
+            String threeZeros = "0.00";
             builder.withValue( QuoteColumns.SYMBOL, jsonObject.getString( "symbol" ) );
-            builder.withValue( QuoteColumns.BIDPRICE, truncateBidPrice(
-                    jsonObject.getString( "Bid" ) ) );
-            builder.withValue( QuoteColumns.PERCENT_CHANGE, truncateChange(
-                    jsonObject.getString( "ChangeinPercent" ), true ) );
-            builder.withValue( QuoteColumns.CHANGE, truncateChange( change, false ) );
-            builder.withValue( QuoteColumns.ISCURRENT, 1 ); // this is the latest, current-est value
+            builder.withValue( QuoteColumns.BIDPRICE,
+                            truncateBidPrice( bidPrice.equals( "null" ) ? threeZeros : bidPrice ) );
+            builder.withValue( QuoteColumns.PERCENT_CHANGE,
+                    truncateChange( jsonObject.getString( "ChangeinPercent" ), true ) );
+            builder.withValue( QuoteColumns.CHANGE,
+                    truncateChange( change, false ) );
+            builder.withValue( QuoteColumns.ISCURRENT, 1 ); /* meaning that this is the latest,
+            current-est value */
             if ( change.charAt( 0 ) == '-' ) {
                 builder.withValue( QuoteColumns.ISUP, 0 );
             } else {
