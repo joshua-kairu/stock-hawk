@@ -169,6 +169,13 @@ public class StockTaskService extends GcmTaskService {
 
     /* Other Methods */
 
+    /**
+     * Fetches data from a given url.
+     *
+     * @throws IOException if network is unsuccessful
+     * @return The fetched data as a String
+     * */
+    // begin method fetchData
     String fetchData( String url ) throws IOException {
         Request request = new Request.Builder()
                 .url( url )
@@ -176,7 +183,7 @@ public class StockTaskService extends GcmTaskService {
 
         Response response = client.newCall( request ).execute();
         return response.body().string();
-    }
+    } // end method fetchData
 
     /**
      * Helper method to update the collection widget.
