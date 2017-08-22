@@ -123,46 +123,45 @@ public class StockTaskService extends GcmTaskService {
         final String getResponse;
         int result = GcmNetworkManager.RESULT_FAILURE;
 
-        if ( urlStringBuilder != null ) {
-            urlString = urlStringBuilder.toString();
+        urlString = urlStringBuilder.toString();
+        try {
+            getResponse = fetchData( urlString );
+            result = GcmNetworkManager.RESULT_SUCCESS;
             try {
-                getResponse = fetchData( urlString );
-                result = GcmNetworkManager.RESULT_SUCCESS;
-                try {
-                    ContentValues contentValues = new ContentValues();
-                    // update ISCURRENT to 0 (false) so new data is current
-                    // this is done before new data is added. All new data added is given an
-                    // ISCURRENT value of 1 (true), showing that it is fresh.
-                    if ( isUpdate ) {
-                        contentValues.put( QuoteColumns.ISCURRENT, 0 );
-                        mContext.getContentResolver().update( QuoteProvider.Quotes.CONTENT_URI,
-                                contentValues, null, null );
+                ContentValues contentValues = new ContentValues();
+                // update ISCURRENT to 0 (false) so new data is current
+                // this is done before new data is added. All new data added is given an
+                // ISCURRENT value of 1 (true), showing that it is fresh.
+                // See Utils.buildBatchOperation
+                if ( isUpdate ) {
+                    contentValues.put( QuoteColumns.ISCURRENT, 0 );
+                    mContext.getContentResolver().update( QuoteProvider.Quotes.CONTENT_URI,
+                            contentValues, null, null );
 
-                        // update the widget
-                        updateWidget();
+                    // update the widget
+                    updateWidget();
 
-                    }
-
-                    // if we've added a new stock, we should let the widget know of that
-                    if ( params.getTag().equals( "add" ) ) { updateWidget(); }
-
-                    mContext.getContentResolver().applyBatch( QuoteProvider.AUTHORITY,
-                            Utils.quoteJsonToContentVals( getResponse ) );
-                } catch ( RemoteException | OperationApplicationException e ) {
-                    Log.e( LOG_TAG, "Error applying batch insert", e );
                 }
 
-                // catch number formats
-                catch ( NumberFormatException e ) {
-                    if ( getResponse != null ) {
-                        EventBus.getDefault().post( new NoSuchStockEvent(
-                                Utils.getSymbolFromJSON( getResponse ) ) );
-                    }
-                }
+                // if we've added a new stock, we should let the widget know of that
+                if ( params.getTag().equals( "add" ) ) { updateWidget(); }
 
-            } catch ( IOException e ) {
-                e.printStackTrace();
+                mContext.getContentResolver().applyBatch( QuoteProvider.AUTHORITY,
+                        Utils.quoteJsonToContentVals( getResponse ) );
+            } catch ( RemoteException | OperationApplicationException e ) {
+                Log.e( LOG_TAG, "Error applying batch insert", e );
             }
+
+            // catch number formats
+            catch ( NumberFormatException e ) {
+                if ( getResponse != null ) {
+                    EventBus.getDefault().post( new NoSuchStockEvent(
+                            Utils.getSymbolFromJSON( getResponse ) ) );
+                }
+            }
+
+        } catch ( IOException e ) {
+            e.printStackTrace();
         }
 
         return result;
