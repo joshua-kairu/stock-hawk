@@ -11,6 +11,8 @@
 
     <dimen name="list_item_height">72dp</dimen>
 
+    <dimen name="status_textview_height">36dp</dimen> <!-- half the list item height -->
+
     <!-- widget -->
 
     <!-- formula: size = 70dp * number-of-cells - 30dp -->
