@@ -48,8 +48,32 @@
     <!-- message for when there are no stocks to display [CHAR LIMIT = 30] -->
     <string name="message_error_no_stocks_info">No Stocks Info Available</string>
 
-    <!-- message for when there is no network [CHAR LIMIT = 55] -->
-    <string name="message_error_no_network">Uh-oh! This app requires an internet connection</string>
+    <!-- message for when there is no network [CHAR LIMIT = 35] -->
+    <string name="message_error_no_network">Oops! No internet connection</string>
+
+    <!-- message for when we are refreshing stocks data [CHAR LIMIT = 20] -->
+    <string name="message_info_refreshing">Refreshing. . .</string>
+
+    <!-- message for when we are displaying outdated stocks [CHAR LIMIT = 55] -->
+    <string name="message_warn_outdated_stocks">Displaying outdated stocks. Tap here to refresh</string>
+
+    <!-- message for when the server is down [CHAR LIMIT = 55] -->
+    <string name="message_error_server_down">Failed to connect to server. Tap here to retry</string>
+
+    <!-- message for when we are attempting to connect [CHAR LIMIT = 25] -->
+    <string name="message_info_connecting">Trying to connect. . .</string>
+
+    <!-- message for when there's an error fetching stocks [CHAR LIMIT = 45] -->
+    <string name="message_error_when_fetching">Error fetching stocks. Tap here to retry</string>
+
+    <!-- message for when the server response is invalid [CHAR LIMIT = 45] -->
+    <string name="message_error_server_invalid">Bad server response. Tap here to retry</string>
+
+    <!-- message for when there's a problem saving fetched data [CHAR LIMIT = 45] -->
+    <string name="message_error_when_saving">Error saving stocks. Tap here to retry</string>
+
+    <!-- message for when there's a problem we don't know yet [CHAR LIMIT = 55] -->
+    <string name="message_error_unknown">Something unknown went wrong. Tap here to retry</string>
 
     <!-- preferences -->
 
@@ -61,5 +85,8 @@
 
     <!-- show change units as percents [CHAR LIMIT = NONE] -->
     <string name="pref_change_units_percents_value" translatable="false">percents</string>
+
+    <!-- key for storing the current stocks status [CHAR LIMIT = NONE] -->
+    <string name="pref_stocks_status_key" translatable="false">stocks_status</string>
 
 </resources>

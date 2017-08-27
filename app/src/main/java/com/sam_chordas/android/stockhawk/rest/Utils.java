@@ -9,6 +9,7 @@ import com.google.android.gms.gcm.TaskParams;
 import com.sam_chordas.android.stockhawk.R;
 import com.sam_chordas.android.stockhawk.data.QuoteColumns;
 import com.sam_chordas.android.stockhawk.data.QuoteProvider;
+import com.sam_chordas.android.stockhawk.service.StockTaskService;
 
 import java.util.ArrayList;
 import java.util.Locale;
@@ -18,9 +19,22 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import static com.sam_chordas.android.stockhawk.service.StockTaskService.STOCKS_STATUS_CONNECTING;
+import static com.sam_chordas.android.stockhawk.service.StockTaskService.STOCKS_STATUS_FETCH_ERROR;
+import static com.sam_chordas.android.stockhawk.service.StockTaskService.STOCKS_STATUS_OK;
+import static com.sam_chordas.android.stockhawk.service.StockTaskService.STOCKS_STATUS_OUTDATED;
+import static com.sam_chordas.android.stockhawk.service.StockTaskService.STOCKS_STATUS_REFRESHING;
+import static com.sam_chordas.android.stockhawk.service.StockTaskService.STOCKS_STATUS_SAVE_ERROR;
+import static com.sam_chordas.android.stockhawk.service.StockTaskService.STOCKS_STATUS_SERVER_DOWN;
+import static com.sam_chordas.android.stockhawk.service.StockTaskService.STOCKS_STATUS_SERVER_INVALID;
+import static com.sam_chordas.android.stockhawk.service.StockTaskService.STOCKS_STATUS_UNKNOWN;
+
 /**
  * Created by sam_chordas on 10/8/15.
+ *
+ * Utility methods class.
  */
+// begin class Utils
 public class Utils {
 
     private static String LOG_TAG = Utils.class.getSimpleName();
@@ -131,32 +145,28 @@ public class Utils {
      *
      * */
 
-    public static ArrayList quoteJsonToContentVals( String JSON ) {
+    public static ArrayList quoteJsonToContentVals( String JSON ) throws JSONException {
         ArrayList< ContentProviderOperation > batchOperations = new ArrayList<>();
-        JSONObject jsonObject = null;
-        JSONArray resultsArray = null;
-        try {
-            jsonObject = new JSONObject( JSON );
-            if ( jsonObject != null && jsonObject.length() != 0 ) {
-                jsonObject = jsonObject.getJSONObject( "query" );
-                int count = Integer.parseInt( jsonObject.getString( "count" ) );
-                if ( count == 1 ) {
-                    jsonObject = jsonObject.getJSONObject( "results" )
-                            .getJSONObject( "quote" );
-                    batchOperations.add( buildBatchOperation( jsonObject ) );
-                } else {
-                    resultsArray = jsonObject.getJSONObject( "results" ).getJSONArray( "quote" );
+        JSONObject jsonObject;
+        JSONArray resultsArray;
+        jsonObject = new JSONObject( JSON );
+        if ( jsonObject != null && jsonObject.length() != 0 ) {
+            jsonObject = jsonObject.getJSONObject( "query" );
+            int count = Integer.parseInt( jsonObject.getString( "count" ) );
+            if ( count == 1 ) {
+                jsonObject = jsonObject.getJSONObject( "results" )
+                        .getJSONObject( "quote" );
+                batchOperations.add( buildBatchOperation( jsonObject ) );
+            } else {
+                resultsArray = jsonObject.getJSONObject( "results" ).getJSONArray( "quote" );
 
-                    if ( resultsArray != null && resultsArray.length() != 0 ) {
-                        for ( int i = 0; i < resultsArray.length(); i++ ) {
-                            jsonObject = resultsArray.getJSONObject( i );
-                            batchOperations.add( buildBatchOperation( jsonObject ) );
-                        }
+                if ( resultsArray != null && resultsArray.length() != 0 ) {
+                    for ( int i = 0; i < resultsArray.length(); i++ ) {
+                        jsonObject = resultsArray.getJSONObject( i );
+                        batchOperations.add( buildBatchOperation( jsonObject ) );
                     }
                 }
             }
-        } catch ( JSONException e ) {
-            Log.e( LOG_TAG, "String to JSON failed: " + e );
         }
         return batchOperations;
     }
@@ -183,11 +193,10 @@ public class Utils {
         return change;
     }
 
-    public static ContentProviderOperation buildBatchOperation( JSONObject jsonObject ) {
+    public static ContentProviderOperation buildBatchOperation( JSONObject jsonObject )
+            throws JSONException {
         ContentProviderOperation.Builder builder = ContentProviderOperation.newInsert(
                 QuoteProvider.Quotes.CONTENT_URI );
-        try {
-
             /*
              "symbol":"YHOO",
              "Bid":null,
@@ -195,30 +204,27 @@ public class Utils {
              "ChangeinPercent":"+0.00%",
              * */
 
-            // if the bid price is null, just show zeros as the bid price. otherwise this will
-            // cause unnecessary NumberFormatExceptions
+        // if the bid price is null, just show zeros as the bid price. otherwise this will
+        // cause unnecessary NumberFormatExceptions
 
-            String change = jsonObject.getString( "Change" );
-            String bidPrice = jsonObject.getString( "Bid" );
-            String threeZeros = "0.00";
-            builder.withValue( QuoteColumns.SYMBOL, jsonObject.getString( "symbol" ) );
-            builder.withValue( QuoteColumns.BIDPRICE,
-                            truncateBidPrice( bidPrice.equals( "null" ) ? threeZeros : bidPrice ) );
-            builder.withValue( QuoteColumns.PERCENT_CHANGE,
-                    truncateChange( jsonObject.getString( "ChangeinPercent" ), true ) );
-            builder.withValue( QuoteColumns.CHANGE,
-                    truncateChange( change, false ) );
-            builder.withValue( QuoteColumns.ISCURRENT, 1 ); /* meaning that this is the latest,
+        String change = jsonObject.getString( "Change" );
+        String bidPrice = jsonObject.getString( "Bid" );
+        String threeZeros = "0.00";
+        builder.withValue( QuoteColumns.SYMBOL, jsonObject.getString( "symbol" ) );
+        builder.withValue( QuoteColumns.BIDPRICE,
+                truncateBidPrice( bidPrice.equals( "null" ) ? threeZeros : bidPrice ) );
+        builder.withValue( QuoteColumns.PERCENT_CHANGE,
+                truncateChange( jsonObject.getString( "ChangeinPercent" ), true ) );
+        builder.withValue( QuoteColumns.CHANGE,
+                truncateChange( change, false ) );
+        builder.withValue( QuoteColumns.ISCURRENT, 1 ); /* meaning that this is the latest,
             current-est value */
-            if ( change.charAt( 0 ) == '-' ) {
-                builder.withValue( QuoteColumns.ISUP, 0 );
-            } else {
-                builder.withValue( QuoteColumns.ISUP, 1 );
-            }
-
-        } catch ( JSONException e ) {
-            e.printStackTrace();
+        if ( change.charAt( 0 ) == '-' ) {
+            builder.withValue( QuoteColumns.ISUP, 0 );
+        } else {
+            builder.withValue( QuoteColumns.ISUP, 1 );
         }
+
         return builder.build();
     }
 
@@ -444,4 +450,73 @@ public class Utils {
 
     } // end method getChangeUnits
 
-}
+    /**
+     * Returns the current stock status, as defined by the interface
+     * {@link com.sam_chordas.android.stockhawk.service.StockTaskService.StocksStatus}
+     *
+     * @param context Current context
+     *
+     * @return Current stock status, a member of the {@link android.support.annotation.IntDef}
+     * {@link com.sam_chordas.android.stockhawk.service.StockTaskService.StocksStatus}
+     * */
+    @StockTaskService.StocksStatus
+    // begin method getStocksStatus
+    public static int getStocksStatus( Context context ) {
+
+        // 0. get the stocks status from preferences
+        // 1. return the appropriate status
+
+        // 0. get the stocks status from preferences
+
+        int stocksStatus = PreferenceManager.getDefaultSharedPreferences( context ).getInt(
+                context.getString( R.string.pref_stocks_status_key ),
+                STOCKS_STATUS_OUTDATED );
+
+        // 1. return the appropriate status
+
+        // begin switch to determine status
+        switch ( stocksStatus ) {
+
+            case STOCKS_STATUS_OK: return STOCKS_STATUS_OK;
+
+            case STOCKS_STATUS_SERVER_DOWN: return STOCKS_STATUS_SERVER_DOWN;
+
+            case STOCKS_STATUS_SERVER_INVALID: return STOCKS_STATUS_SERVER_INVALID;
+
+            case STOCKS_STATUS_FETCH_ERROR: return STOCKS_STATUS_FETCH_ERROR;
+
+            case STOCKS_STATUS_SAVE_ERROR: return STOCKS_STATUS_SAVE_ERROR;
+
+            case STOCKS_STATUS_OUTDATED: return STOCKS_STATUS_OUTDATED;
+
+            case STOCKS_STATUS_REFRESHING: return STOCKS_STATUS_REFRESHING;
+
+            case STOCKS_STATUS_CONNECTING: return STOCKS_STATUS_CONNECTING;
+
+            default: return STOCKS_STATUS_UNKNOWN;
+
+        } // end switch to determine status
+
+    } // end method getStocksStatus
+
+    /**
+     * Stores the stocks status in preferences.
+     *
+     * @param context Current {@link Context}
+     * @param stockStatus The current stocks status, a member of
+     * {@link com.sam_chordas.android.stockhawk.service.StockTaskService.StocksStatus}
+     * */
+    // begin method setStockStatus
+    public static void setStockStatus ( Context context,
+                                        @StockTaskService.StocksStatus int stockStatus ) {
+
+        // 0. store the status in preferences
+
+        // 0. store the status in preferences
+
+        PreferenceManager.getDefaultSharedPreferences( context ).edit().putInt(
+                context.getString( R.string.pref_stocks_status_key ), stockStatus ).apply();
+
+    } // end method setStockStatus
+
+} // end class Utils

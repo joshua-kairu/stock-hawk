@@ -7,6 +7,7 @@ import android.content.OperationApplicationException;
 import android.database.Cursor;
 import android.database.DatabaseUtils;
 import android.os.RemoteException;
+import android.support.annotation.IntDef;
 import android.util.Log;
 
 import com.google.android.gms.gcm.GcmNetworkManager;
@@ -22,9 +23,12 @@ import com.squareup.okhttp.Request;
 import com.squareup.okhttp.Response;
 
 import org.greenrobot.eventbus.EventBus;
+import org.json.JSONException;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 import java.net.URLEncoder;
 
 /**
@@ -38,17 +42,67 @@ public class StockTaskService extends GcmTaskService {
 
     /* Integers */
 
+    /** Status when stocks have been fetched successfully. */
+    public static final int STOCKS_STATUS_OK = 0;
+
+    /** Status when the stocks server is down, such as
+     * when we cannot access it to get data from it. */
+    public static final int STOCKS_STATUS_SERVER_DOWN = 1;
+
+    /** Status when the server returns invalid (JSON) data. */
+    public static final int STOCKS_STATUS_SERVER_INVALID = 2;
+
+    /** Status when there's an error fetching stocks data, maybe due to an encoding problem. */
+    public static final int STOCKS_STATUS_FETCH_ERROR = 3;
+
+    /** Status when we cannot save the fetched data well, maybe due to failed db inserts. */
+    public static final int STOCKS_STATUS_SAVE_ERROR = 4;
+
+    /** Status when the stocks are outdated. This is seen when the db has no current stocks. */
+    public static final int STOCKS_STATUS_OUTDATED = 5;
+
+    /** Status when we are refreshing the stocks. */
+    public static final int STOCKS_STATUS_REFRESHING = 6;
+
+    /** Status when we are attempting to connect to the server. */
+    public static final int STOCKS_STATUS_CONNECTING = 7;
+
+    /** Status when we don't know what has happened, maybe when we cannot match any of the other
+     * statuses in an if statement in {@link Utils}. */
+    public static final int STOCKS_STATUS_UNKNOWN = 8;
+
     /* Strings */
 
     private String LOG_TAG = StockTaskService.class.getSimpleName();
 
     /* VARIABLES */
 
-    private OkHttpClient client = new OkHttpClient();
-    private Context mContext;
-    private StringBuilder mStoredSymbols = new StringBuilder();
-    private boolean isUpdate;
+    /* Annotations */
 
+    // SOURCE - Annotations are to be discarded by the compiler.
+    @Retention( RetentionPolicy.SOURCE )
+    @IntDef( { STOCKS_STATUS_OK, STOCKS_STATUS_SERVER_DOWN, STOCKS_STATUS_SERVER_INVALID,
+            STOCKS_STATUS_FETCH_ERROR, STOCKS_STATUS_SAVE_ERROR, STOCKS_STATUS_OUTDATED,
+            STOCKS_STATUS_REFRESHING, STOCKS_STATUS_CONNECTING, STOCKS_STATUS_UNKNOWN } )
+    /** Enumeration of possible stocks data statuses. */
+    public @interface StocksStatus{}
+    
+    /* Contexts */
+
+    private Context mContext;
+    
+    /* OkHttpClients */
+    
+    private OkHttpClient client = new OkHttpClient();
+    
+    /* Primitives */
+
+    private boolean isUpdate;
+    
+    /* StringBuilders */
+    
+    private StringBuilder mStoredSymbols = new StringBuilder();
+    
     /* CONSTRUCTOR */
 
     public StockTaskService() {
@@ -158,9 +212,11 @@ public class StockTaskService extends GcmTaskService {
                     EventBus.getDefault().post( new NoSuchStockEvent(
                             Utils.getSymbolFromJSON( getResponse ) ) );
                 }
+            } catch ( JSONException e ) {
+                Log.e( LOG_TAG, "String to JSON failed: " + e );
             }
 
-        } catch ( IOException e ) {
+        } catch ( IOException e ) { // gotten from fetchData.
             e.printStackTrace();
         }
 
@@ -172,17 +228,20 @@ public class StockTaskService extends GcmTaskService {
     /**
      * Fetches data from a given url.
      *
+     * @param url The url as a String
      * @throws IOException if network is unsuccessful
      * @return The fetched data as a String
      * */
     // begin method fetchData
     String fetchData( String url ) throws IOException {
+
         Request request = new Request.Builder()
                 .url( url )
                 .build();
 
         Response response = client.newCall( request ).execute();
         return response.body().string();
+
     } // end method fetchData
 
     /**
