@@ -20,6 +20,7 @@ import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.afollestad.materialdialogs.MaterialDialog;
@@ -27,6 +28,8 @@ import com.sam_chordas.android.stockhawk.BuildConfig;
 import com.sam_chordas.android.stockhawk.R;
 import com.sam_chordas.android.stockhawk.data.QuoteColumns;
 import com.sam_chordas.android.stockhawk.data.QuoteProvider;
+import com.sam_chordas.android.stockhawk.data.remote.CheckConnectivityAsyncTask;
+import com.sam_chordas.android.stockhawk.event.ConnectivityEvent;
 import com.sam_chordas.android.stockhawk.event.NoSuchStockEvent;
 import com.sam_chordas.android.stockhawk.rest.QuoteCursorAdapter;
 import com.sam_chordas.android.stockhawk.rest.Utils;
@@ -48,10 +51,6 @@ public class MyStocksActivity extends AppCompatActivity
 
     /* Integers */
 
-    /**
-     * Fragment managing the behaviors, interactions and presentation of the navigation drawer.
-     */
-
     private static final int CURSOR_LOADER_ID = 0;
 
     /* Strings */
@@ -68,6 +67,14 @@ public class MyStocksActivity extends AppCompatActivity
     private QuoteCursorAdapter mCursorAdapter;
     private Context mContext;
     private Cursor mCursor;
+
+    /* FloatingActionButtons */
+
+    private FloatingActionButton mFab; // ditto
+
+    /* TextViews */
+
+    private TextView mStatusTextView; // ditto
 
     /* CONSTRUCTOR */
 
@@ -91,15 +98,15 @@ public class MyStocksActivity extends AppCompatActivity
         // The intent service is for executing immediate pulls from the Yahoo API
         // GCMTaskService can only schedule tasks, they cannot execute immediately
         mServiceIntent = new Intent( this, StockIntentService.class );
-        if ( savedInstanceState == null ) {
-            // Run the initialize task service so that some stocks appear upon an empty database
-            mServiceIntent.putExtra( "tag", "init" );
-            if ( isConnected ) {
-                startService( mServiceIntent );
-            } else {
-                networkToast();
-            }
-        }
+//        if ( savedInstanceState == null ) {
+//            // Run the initialize task service so that some stocks appear upon an empty database
+//            mServiceIntent.putExtra( "tag", "init" );
+//            if ( isConnected ) {
+//                startService( mServiceIntent );
+//            } else {
+//                networkToast();
+//            }
+//        }
         RecyclerView recyclerView = ( RecyclerView ) findViewById( R.id.recycler_view );
         recyclerView.setLayoutManager( new LinearLayoutManager( this ) );
         getLoaderManager().initLoader( CURSOR_LOADER_ID, null, this );
@@ -108,51 +115,55 @@ public class MyStocksActivity extends AppCompatActivity
 
         recyclerView.setAdapter( mCursorAdapter );
 
-        FloatingActionButton fab = ( FloatingActionButton ) findViewById( R.id.fab );
-        fab.setOnClickListener( new View.OnClickListener() {
-            @Override
-            public void onClick( View v ) {
-                if ( isConnected ) {
-                    new MaterialDialog.Builder( mContext ).title( R.string.symbol_search )
-                            .content( R.string.symbol_search_title )
-                            .inputType( InputType.TYPE_CLASS_TEXT )
-                            .input( R.string.symbol_search_input_hint, R.string.symbol_search_input_prefill,
-                                    new MaterialDialog.InputCallback() {
+        mStatusTextView = ( TextView ) findViewById( R.id.status_textView );
 
-                                        @Override
-                                        public void onInput( MaterialDialog dialog,
-                                                             CharSequence input ) {
+        mFab = ( FloatingActionButton ) findViewById( R.id.fab );
 
-                                            // On FAB click, receive user input. Make sure the stock
-                                            // doesn't already exist in the DB and proceed accordingly
-                                            Cursor c = getContentResolver().query(
-                                                    QuoteProvider.Quotes.CONTENT_URI,
-                                                    new String[]{ QuoteColumns.SYMBOL },
-                                                    QuoteColumns.SYMBOL + "= ?",
-                                                    new String[]{ input.toString() }, null );
-                                            if ( c.getCount() != 0 ) {
-                                                Toast toast =
-                                                        Toast.makeText( MyStocksActivity.this,
-                                                                "This stock is already saved!",
-                                                                Toast.LENGTH_LONG );
-                                                toast.setGravity( Gravity.CENTER, Gravity.CENTER, 0 );
-                                                toast.show();
-                                                return;
-                                            } else {
-                                                // Add the stock to DB
-                                                mServiceIntent.putExtra( "tag", "add" );
-                                                mServiceIntent.putExtra( "symbol", input.toString() );
-                                                startService( mServiceIntent );
-                                            }
-                                        }
-                                    } )
-                            .show();
-                } else {
-                    networkToast();
-                }
-
-            }
-        } );
+//        FloatingActionButton fab = ( FloatingActionButton ) findViewById( R.id.fab );
+//        fab.setOnClickListener( new View.OnClickListener() {
+//            @Override
+//            public void onClick( View v ) {
+//                if ( isConnected ) {
+//                    new MaterialDialog.Builder( mContext ).title( R.string.symbol_search )
+//                            .content( R.string.symbol_search_title )
+//                            .inputType( InputType.TYPE_CLASS_TEXT )
+//                            .input( R.string.symbol_search_input_hint, R.string.symbol_search_input_prefill,
+//                                    new MaterialDialog.InputCallback() {
+//
+//                                        @Override
+//                                        public void onInput( MaterialDialog dialog,
+//                                                             CharSequence input ) {
+//
+//                                            // On FAB click, receive user input. Make sure the stock
+//                                            // doesn't already exist in the DB and proceed accordingly
+//                                            Cursor c = getContentResolver().query(
+//                                                    QuoteProvider.Quotes.CONTENT_URI,
+//                                                    new String[]{ QuoteColumns.SYMBOL },
+//                                                    QuoteColumns.SYMBOL + "= ?",
+//                                                    new String[]{ input.toString() }, null );
+//                                            if ( c.getCount() != 0 ) {
+//                                                Toast toast =
+//                                                        Toast.makeText( MyStocksActivity.this,
+//                                                                "This stock is already saved!",
+//                                                                Toast.LENGTH_LONG );
+//                                                toast.setGravity( Gravity.CENTER, Gravity.CENTER, 0 );
+//                                                toast.show();
+//                                                return;
+//                                            } else {
+//                                                // Add the stock to DB
+//                                                mServiceIntent.putExtra( "tag", "add" );
+//                                                mServiceIntent.putExtra( "symbol", input.toString() );
+//                                                startService( mServiceIntent );
+//                                            }
+//                                        }
+//                                    } )
+//                            .show();
+//                } else {
+//                    networkToast();
+//                }
+//
+//            }
+//        } );
 
         ItemTouchHelper.Callback callback = new SimpleItemTouchHelperCallback( mCursorAdapter );
         mItemTouchHelper = new ItemTouchHelper( callback );
@@ -160,24 +171,27 @@ public class MyStocksActivity extends AppCompatActivity
 
         mTitle = getTitle();
         if ( isConnected ) {
-            long period = 3600L;
-            long flex = 10L;
-            String periodicTag = "periodic";
-
-            // create a periodic task to pull stocks once every hour after the app has been opened.
-            // This is so Widget data stays up to date.
-            PeriodicTask periodicTask = new PeriodicTask.Builder()
-                    .setService( StockTaskService.class )
-                    .setPeriod( period )
-                    .setFlex( flex )
-                    .setTag( periodicTag )
-                    .setRequiredNetwork( Task.NETWORK_STATE_CONNECTED )
-                    .setRequiresCharging( false )
-                    .build();
-            // Schedule task with tag "periodic." This ensure that only the stocks present in the DB
-            // are updated.
-            GcmNetworkManager.getInstance( this ).schedule( periodicTask );
+//            long period = 3600L;
+//            long flex = 10L;
+//            String periodicTag = "periodic";
+//
+//            // create a periodic task to pull stocks once every hour after the app has been opened.
+//            // This is so Widget data stays up to date.
+//            PeriodicTask periodicTask = new PeriodicTask.Builder()
+//                    .setService( StockTaskService.class )
+//                    .setPeriod( period )
+//                    .setFlex( flex )
+//                    .setTag( periodicTag )
+//                    .setRequiredNetwork( Task.NETWORK_STATE_CONNECTED )
+//                    .setRequiresCharging( false )
+//                    .build();
+//            // Schedule task with tag "periodic." This ensure that only the stocks present in the DB
+//            // are updated.
+//            GcmNetworkManager.getInstance( this ).schedule( periodicTask );
         }
+
+        new CheckConnectivityAsyncTask().execute();
+
     }
 
     @Override
@@ -303,6 +317,7 @@ public class MyStocksActivity extends AppCompatActivity
     public void onLoadFinished( Loader< Cursor > loader, Cursor data ) {
         mCursorAdapter.swapCursor( data );
         mCursor = data;
+        int s = 3;
     }
 
     @Override
@@ -354,7 +369,8 @@ public class MyStocksActivity extends AppCompatActivity
     /* Other Methods */
 
     public void networkToast() {
-        Toast.makeText( mContext, getString( R.string.message_error_no_network ), Toast.LENGTH_SHORT ).show();
+        Toast.makeText( mContext, getString( R.string.message_error_no_network ),
+                Toast.LENGTH_SHORT ).show();
     }
 
     public void restoreActionBar() {
@@ -377,5 +393,121 @@ public class MyStocksActivity extends AppCompatActivity
                 Toast.LENGTH_SHORT ).show();
 
     } // end onNoSuchStockEvent
+
+    @Subscribe( threadMode = ThreadMode.MAIN )
+    // begin method onConnectivityEvent
+    public void onConnectivityEvent( ConnectivityEvent event ) {
+
+        // 0. if we're connected
+        // 0a. start the stock intent service to fetch stocks
+        // 0b. display the add fab
+        // 0c. schedule periodic stock data update
+        // 1. otherwise we're offline
+        // 1a. show the user this
+        // 1b. hide the add fab
+
+        // 0. if we're connected
+
+        // begin if we're online
+        if ( event.isConnected() ) {
+
+            // 0a. start the stock intent service to fetch stocks
+
+            mServiceIntent.putExtra( "tag", "init" );
+            startService( mServiceIntent );
+
+            // 0b. display the add fab
+
+            // begin fab.setOnClickListener
+            mFab.setOnClickListener( new View.OnClickListener() {
+
+                @Override
+                public void onClick( View v ) {
+
+                    new MaterialDialog.Builder( mContext ).title( R.string.symbol_search )
+                            .content( R.string.symbol_search_title )
+                            .inputType( InputType.TYPE_CLASS_TEXT )
+                            .input( R.string.symbol_search_input_hint,
+                                    R.string.symbol_search_input_prefill,
+                                    new MaterialDialog.InputCallback() {
+
+                                        @Override
+                                        public void onInput( MaterialDialog dialog,
+                                                             CharSequence input ) {
+
+                                            // On FAB click, receive user input. Make sure the stock
+                                            // doesn't already exist in the DB and proceed
+                                            // accordingly
+                                            Cursor c = getContentResolver().query(
+                                                    QuoteProvider.Quotes.CONTENT_URI,
+                                                    new String[]{ QuoteColumns.SYMBOL },
+                                                    QuoteColumns.SYMBOL + "= ?",
+                                                    new String[]{ input.toString() }, null );
+                                            if ( c.getCount() != 0 ) {
+                                                Toast toast =
+                                                        Toast.makeText( MyStocksActivity.this,
+                                                                "This stock is already saved!",
+                                                                Toast.LENGTH_LONG );
+                                                toast.setGravity( Gravity.CENTER, Gravity.CENTER,
+                                                        0 );
+                                                toast.show();
+                                            } else {
+                                                // Add the stock to DB
+                                                mServiceIntent.putExtra( "tag", "add" );
+                                                mServiceIntent.putExtra( "symbol", input.toString() );
+                                                startService( mServiceIntent );
+                                            }
+                                        }
+                                    } )
+                            .show();
+
+                    }
+
+                }); // end fab.setOnClickListener
+
+            mFab.setVisibility( View.VISIBLE );
+
+            // 0c. schedule periodic stock data update
+
+            long period = 3600L;
+            long flex = 10L;
+            String periodicTag = "periodic";
+
+            // create a periodic task to pull stocks once every hour after the app has been opened.
+            // This is so Widget data stays up to date.
+            PeriodicTask periodicTask = new PeriodicTask.Builder()
+                    .setService( StockTaskService.class )
+                    .setPeriod( period )
+                    .setFlex( flex )
+                    .setTag( periodicTag )
+                    .setRequiredNetwork( Task.NETWORK_STATE_CONNECTED )
+                    .setRequiresCharging( false )
+                    .build();
+            // Schedule task with tag "periodic." This ensure that only the stocks present in the DB
+            // are updated.
+            GcmNetworkManager.getInstance( this ).schedule( periodicTask );
+
+        } // end if we're online
+
+        // 1. otherwise we're offline
+
+        // begin else we're offline
+        else {
+
+            // 1a. show the user this
+
+            mStatusTextView.setText( R.string.message_error_no_network );
+
+            if ( mStatusTextView.getVisibility() == View.INVISIBLE ) {
+                mStatusTextView.setVisibility( View.VISIBLE );
+            }
+
+            // 1b. hide the add fab
+
+            if ( mFab.getVisibility() == View.VISIBLE ) { mFab.setVisibility( View.INVISIBLE ); }
+
+        } // end else we're offline
+
+    } // end method onConnectivityEvent
 
 }
