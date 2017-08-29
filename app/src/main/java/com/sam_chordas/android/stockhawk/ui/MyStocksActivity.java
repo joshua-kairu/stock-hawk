@@ -498,13 +498,13 @@ public class MyStocksActivity extends AppCompatActivity
 
             mStatusTextView.setText( R.string.message_error_no_network );
 
-            if ( mStatusTextView.getVisibility() == View.INVISIBLE ) {
+            if ( mStatusTextView.getVisibility() == View.GONE ) {
                 mStatusTextView.setVisibility( View.VISIBLE );
             }
 
             // 1b. hide the add fab
 
-            if ( mFab.getVisibility() == View.VISIBLE ) { mFab.setVisibility( View.INVISIBLE ); }
+            if ( mFab.getVisibility() == View.VISIBLE ) { mFab.setVisibility( View.GONE ); }
 
         } // end else we're offline
 
