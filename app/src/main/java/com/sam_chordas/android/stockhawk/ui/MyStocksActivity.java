@@ -317,7 +317,6 @@ public class MyStocksActivity extends AppCompatActivity
     public void onLoadFinished( Loader< Cursor > loader, Cursor data ) {
         mCursorAdapter.swapCursor( data );
         mCursor = data;
-        int s = 3;
     }
 
     @Override
