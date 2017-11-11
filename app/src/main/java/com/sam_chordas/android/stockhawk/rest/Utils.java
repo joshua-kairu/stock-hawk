@@ -22,6 +22,7 @@ import org.json.JSONObject;
 
 import static com.sam_chordas.android.stockhawk.service.StockTaskService.STOCKS_STATUS_CONNECTING;
 import static com.sam_chordas.android.stockhawk.service.StockTaskService.STOCKS_STATUS_FETCH_ERROR;
+import static com.sam_chordas.android.stockhawk.service.StockTaskService.STOCKS_STATUS_NETWORK_DOWN;
 import static com.sam_chordas.android.stockhawk.service.StockTaskService.STOCKS_STATUS_OK;
 import static com.sam_chordas.android.stockhawk.service.StockTaskService.STOCKS_STATUS_OUTDATED;
 import static com.sam_chordas.android.stockhawk.service.StockTaskService.STOCKS_STATUS_REFRESHING;
@@ -471,7 +472,7 @@ public class Utils {
 
         int stocksStatus = PreferenceManager.getDefaultSharedPreferences( context ).getInt(
                 context.getString( R.string.pref_stocks_status_key ),
-                STOCKS_STATUS_OUTDATED );
+                STOCKS_STATUS_UNKNOWN );
 
         // 1. return the appropriate status
 
@@ -493,6 +494,8 @@ public class Utils {
             case STOCKS_STATUS_REFRESHING: return STOCKS_STATUS_REFRESHING;
 
             case STOCKS_STATUS_CONNECTING: return STOCKS_STATUS_CONNECTING;
+
+            case STOCKS_STATUS_NETWORK_DOWN: return STOCKS_STATUS_NETWORK_DOWN;
 
             default: return STOCKS_STATUS_UNKNOWN;
 
