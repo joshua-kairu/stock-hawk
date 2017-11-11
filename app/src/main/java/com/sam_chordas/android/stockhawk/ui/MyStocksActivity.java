@@ -1,13 +1,16 @@
 package com.sam_chordas.android.stockhawk.ui;
 
+import android.annotation.SuppressLint;
 import android.app.LoaderManager;
 import android.content.Context;
 import android.content.CursorLoader;
 import android.content.Intent;
 import android.content.Loader;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.preference.PreferenceManager;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.app.ActionBar;
@@ -16,6 +19,7 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.helper.ItemTouchHelper;
 import android.text.InputType;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -44,8 +48,15 @@ import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
+import static com.sam_chordas.android.stockhawk.service.StockTaskService.STOCKS_STATUS_CONNECTING;
+import static com.sam_chordas.android.stockhawk.service.StockTaskService.STOCKS_STATUS_NETWORK_DOWN;
+import static com.sam_chordas.android.stockhawk.service.StockTaskService.STOCKS_STATUS_OK;
+import static com.sam_chordas.android.stockhawk.service.StockTaskService.STOCKS_STATUS_OUTDATED;
+import static com.sam_chordas.android.stockhawk.service.StockTaskService.STOCKS_STATUS_UNKNOWN;
+
 public class MyStocksActivity extends AppCompatActivity
-        implements LoaderManager.LoaderCallbacks< Cursor >, QuoteAdapterOnClickHandler {
+        implements LoaderManager.LoaderCallbacks< Cursor >, QuoteAdapterOnClickHandler,
+        SharedPreferences.OnSharedPreferenceChangeListener {
 
     /* CONSTANTS */
 
@@ -200,6 +211,7 @@ public class MyStocksActivity extends AppCompatActivity
 
         // 0. super stuff
         // 1. register for events
+        // 2. register for preference changes
 
         // 0. super stuff
 
@@ -208,6 +220,11 @@ public class MyStocksActivity extends AppCompatActivity
         // 1. register for events
 
         EventBus.getDefault().register( this );
+
+        // 2. register for preference changes
+
+        PreferenceManager.getDefaultSharedPreferences( this ).
+                registerOnSharedPreferenceChangeListener( this );
 
     } // end onStart
 
@@ -223,6 +240,7 @@ public class MyStocksActivity extends AppCompatActivity
 
         // 0. super stuff
         // 1. unregister for events
+        // 2. unregister for preference changes
 
         // 0. super stuff
 
@@ -231,6 +249,11 @@ public class MyStocksActivity extends AppCompatActivity
         // 1. unregister for events
 
         EventBus.getDefault().unregister( this );
+
+        // 2. unregister for preference changes
+
+        PreferenceManager.getDefaultSharedPreferences( this )
+                .unregisterOnSharedPreferenceChangeListener( this );
 
     } // end onStop
 
@@ -365,6 +388,34 @@ public class MyStocksActivity extends AppCompatActivity
 
     } // end onClick
 
+    /**
+     * Method to let us know when the shared preferences change.
+     *
+     * In particular, we are interested in the stocks status preference so that we can surface its
+     * change to the user.
+     * */
+    @Override
+    // begin method onSharedPreferenceChanged
+    public void onSharedPreferenceChanged( SharedPreferences sharedPreferences,
+                                           String changedPrefKey ) {
+
+        Log.e( getClass().getSimpleName(), "onSharedPreferenceChanged() called with: sharedPreferences = [" + sharedPreferences + "], changedPrefKey = [" + changedPrefKey + "]" );
+        // 0. if the changed pref is the stocks status one
+        // 0a. update status view
+        // 0b. if the status is stocks outdated, maybe show outdated data too?
+
+        // 0. if the changed pref is the stocks status one
+        // 0a. update status view
+
+        // begin if it's stocks status
+        if ( changedPrefKey.equals( getString( R.string.pref_stocks_status_key ) ) ) {
+            updateStatusView();
+        }
+
+        // 0b. if the status is stocks outdated, maybe show outdated data too?
+
+    } // end method onSharedPreferenceChanged
+
     /* Other Methods */
 
     public void networkToast() {
@@ -399,11 +450,13 @@ public class MyStocksActivity extends AppCompatActivity
 
         // 0. if we're connected
         // 0a. start the stock intent service to fetch stocks
-        // 0b. display the add fab
-        // 0c. schedule periodic stock data update
+        // 0b. save connecting status in preferences
+        // 0c. display the add fab
+        // 0d. schedule periodic stock data update
         // 1. otherwise we're offline
-        // 1a. show the user this
+        // 1a. save the offline status in preferences
         // 1b. hide the add fab
+        // 2. update the status view
 
         // 0. if we're connected
 
@@ -415,7 +468,11 @@ public class MyStocksActivity extends AppCompatActivity
             mServiceIntent.putExtra( "tag", "init" );
             startService( mServiceIntent );
 
-            // 0b. display the add fab
+            // 0b. save connecting status in preferences
+
+            Utils.setStockStatus( this, STOCKS_STATUS_CONNECTING );
+
+            // 0c. display the add fab
 
             // begin fab.setOnClickListener
             mFab.setOnClickListener( new View.OnClickListener() {
@@ -466,7 +523,7 @@ public class MyStocksActivity extends AppCompatActivity
 
             mFab.setVisibility( View.VISIBLE );
 
-            // 0c. schedule periodic stock data update
+            // 0d. schedule periodic stock data update
 
             long period = 3600L;
             long flex = 10L;
@@ -493,13 +550,9 @@ public class MyStocksActivity extends AppCompatActivity
         // begin else we're offline
         else {
 
-            // 1a. show the user this
+            // 1a. save the offline status in preferences
 
-            mStatusTextView.setText( R.string.message_error_no_network );
-
-            if ( mStatusTextView.getVisibility() == View.GONE ) {
-                mStatusTextView.setVisibility( View.VISIBLE );
-            }
+            Utils.setStockStatus( this, STOCKS_STATUS_NETWORK_DOWN );
 
             // 1b. hide the add fab
 
@@ -507,6 +560,93 @@ public class MyStocksActivity extends AppCompatActivity
 
         } // end else we're offline
 
+        // 2. update the status view
+
+        updateStatusView();
+
     } // end method onConnectivityEvent
+
+    /** Method to update the status view as needed. */
+    // begin method updateStatusView
+    @SuppressLint( "SwitchIntDef" ) // we have considered the OK status before starting the switch
+    private void updateStatusView() {
+
+        // 0. get the stocks status
+        // 0a. the default message is there are no stocks
+        // 0b. tell the user the current stocks status - could be
+        // 0b0. there are stocks
+        // 0b0a. hide the status view
+        // 0b0a. stop
+        // 0b1. the stocks are outdated
+        // 0b1a. display the most recent outdated data
+        // 0b2. we refreshing the stocks
+        // 0b3. we are connecting to the servers
+        // 0b4. there are no stocks - the server is down - I/O errors during fetching
+        // 0b5. there are no stocks - invalid data received
+        // 0b6. there are no stocks - because of a fetching error
+        // 0b7. there are no stocks - because of a saving error
+        // 0b8. there are no stocks - network unavailability
+        // 0b-last. there are no stocks - for some unknown reason
+
+        // 0. get the stocks status
+
+        @StockTaskService.StocksStatus int stocksStatus = Utils.getStocksStatus( this );
+
+        // 0a. the default message is there are no stocks
+
+        int message = R.string.message_error_no_stocks_info;
+
+        // 0b. tell the user the current stocks status - could be
+
+        // begin switching stocks status
+        switch ( stocksStatus ) {
+
+            // 0b0. there are stocks
+
+            case STOCKS_STATUS_OK:
+
+                // 0b0a. hide the status view
+
+                mStatusTextView.setVisibility( View.GONE );
+
+                // 0b0a. stop
+
+                return;
+
+            // 0b1. the stocks are outdated
+
+            case STOCKS_STATUS_OUTDATED:
+
+                message = R.string.message_warn_outdated_stocks;
+
+                // 0b1a. display the most recent outdated data
+
+//                hiw
+
+                break;
+
+            case STOCKS_STATUS_NETWORK_DOWN:
+
+                message = R.string.message_error_no_network;
+
+                break;
+
+            // 0c-last. some unknown reason
+
+            default: case STOCKS_STATUS_UNKNOWN:
+
+                message = R.string.message_error_unknown;
+
+                break;
+
+        } // end switching stocks status
+
+        mStatusTextView.setText( message );
+
+        if ( mStatusTextView.getVisibility() == View.GONE ) {
+            mStatusTextView.setVisibility( View.VISIBLE );
+        }
+
+    } // end method updateStatusView
 
 }
