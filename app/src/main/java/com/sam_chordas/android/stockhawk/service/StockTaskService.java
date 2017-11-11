@@ -71,6 +71,9 @@ public class StockTaskService extends GcmTaskService {
      * statuses in an if statement in {@link Utils}. */
     public static final int STOCKS_STATUS_UNKNOWN = 8;
 
+    /** Status when the network is down. */
+    public static final int STOCKS_STATUS_NETWORK_DOWN = 9;
+
     /* Strings */
 
     private String LOG_TAG = StockTaskService.class.getSimpleName();
@@ -83,7 +86,8 @@ public class StockTaskService extends GcmTaskService {
     @Retention( RetentionPolicy.SOURCE )
     @IntDef( { STOCKS_STATUS_OK, STOCKS_STATUS_SERVER_DOWN, STOCKS_STATUS_SERVER_INVALID,
             STOCKS_STATUS_FETCH_ERROR, STOCKS_STATUS_SAVE_ERROR, STOCKS_STATUS_OUTDATED,
-            STOCKS_STATUS_REFRESHING, STOCKS_STATUS_CONNECTING, STOCKS_STATUS_UNKNOWN } )
+            STOCKS_STATUS_REFRESHING, STOCKS_STATUS_CONNECTING, STOCKS_STATUS_UNKNOWN,
+            STOCKS_STATUS_NETWORK_DOWN } )
     /** Enumeration of possible stocks data statuses. */
     public @interface StocksStatus{}
     
@@ -129,6 +133,7 @@ public class StockTaskService extends GcmTaskService {
                     + "in (", "UTF-8" ) );
         } catch ( UnsupportedEncodingException e ) {
             e.printStackTrace();
+            Utils.setStockStatus( mContext, STOCKS_STATUS_FETCH_ERROR );
         }
         if ( params.getTag().equals( "init" ) || params.getTag().equals( "periodic" ) ) {
             isUpdate = true;
@@ -142,6 +147,7 @@ public class StockTaskService extends GcmTaskService {
                             URLEncoder.encode( "\"YHOO\",\"AAPL\",\"GOOG\",\"MSFT\")", "UTF-8" ) );
                 } catch ( UnsupportedEncodingException e ) {
                     e.printStackTrace();
+                    Utils.setStockStatus( mContext, STOCKS_STATUS_FETCH_ERROR );
                 }
             } else if ( initQueryCursor != null ) {
                 DatabaseUtils.dumpCursor( initQueryCursor );
@@ -157,6 +163,7 @@ public class StockTaskService extends GcmTaskService {
                     urlStringBuilder.append( URLEncoder.encode( mStoredSymbols.toString(), "UTF-8" ) );
                 } catch ( UnsupportedEncodingException e ) {
                     e.printStackTrace();
+                    Utils.setStockStatus( mContext, STOCKS_STATUS_FETCH_ERROR );
                 }
             }
         } else if ( params.getTag().equals( "add" ) ) {
@@ -167,6 +174,7 @@ public class StockTaskService extends GcmTaskService {
                 urlStringBuilder.append( URLEncoder.encode( "\"" + stockInput + "\")", "UTF-8" ) );
             } catch ( UnsupportedEncodingException e ) {
                 e.printStackTrace();
+                Utils.setStockStatus( mContext, STOCKS_STATUS_FETCH_ERROR );
             }
         }
         // finalize the URL for the API query.
@@ -202,8 +210,17 @@ public class StockTaskService extends GcmTaskService {
 
                 mContext.getContentResolver().applyBatch( QuoteProvider.AUTHORITY,
                         Utils.quoteJsonToContentVals( getResponse ) );
-            } catch ( RemoteException | OperationApplicationException e ) {
+
+                // we have successfully gotten stocks data!
+                Utils.setStockStatus( mContext, STOCKS_STATUS_OK );
+
+            }
+
+            // catch errors when contacting remote content provider or performing the batch
+            // operation on the db
+            catch ( RemoteException | OperationApplicationException e ) {
                 Log.e( LOG_TAG, "Error applying batch insert", e );
+                Utils.setStockStatus( mContext, STOCKS_STATUS_SAVE_ERROR );
             }
 
             // catch number formats
@@ -212,12 +229,17 @@ public class StockTaskService extends GcmTaskService {
                     EventBus.getDefault().post( new NoSuchStockEvent(
                             Utils.getSymbolFromJSON( getResponse ) ) );
                 }
-            } catch ( JSONException e ) {
+            }
+
+            // catch JSONs
+            catch ( JSONException e ) {
                 Log.e( LOG_TAG, "String to JSON failed: " + e );
+                Utils.setStockStatus( mContext, STOCKS_STATUS_SERVER_INVALID );
             }
 
         } catch ( IOException e ) { // gotten from fetchData.
             e.printStackTrace();
+            Utils.setStockStatus( mContext, STOCKS_STATUS_SERVER_DOWN );
         }
 
         return result;
