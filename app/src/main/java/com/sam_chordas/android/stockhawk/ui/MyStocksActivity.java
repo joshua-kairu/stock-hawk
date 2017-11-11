@@ -54,6 +54,7 @@ import static com.sam_chordas.android.stockhawk.service.StockTaskService.STOCKS_
 import static com.sam_chordas.android.stockhawk.service.StockTaskService.STOCKS_STATUS_OUTDATED;
 import static com.sam_chordas.android.stockhawk.service.StockTaskService.STOCKS_STATUS_UNKNOWN;
 
+// TODO: 11/11/17 Update to use SwipeToRefresh and other UI facilities in new StockHawk 
 public class MyStocksActivity extends AppCompatActivity
         implements LoaderManager.LoaderCallbacks< Cursor >, QuoteAdapterOnClickHandler,
         SharedPreferences.OnSharedPreferenceChangeListener {

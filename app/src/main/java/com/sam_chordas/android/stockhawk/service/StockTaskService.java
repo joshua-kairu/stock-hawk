@@ -38,6 +38,7 @@ import java.net.URLEncoder;
  */
 public class StockTaskService extends GcmTaskService {
 
+    // TODO: 11/11/17 Update to use JobScheduler in new StockHawk 
     /* CONSTANTS */
 
     /* Integers */
